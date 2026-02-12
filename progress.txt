@@ -1,0 +1,65 @@
+BAYWATCH AI — Build Progress
+=============================
+
+Block 1: Scaffolding + Types + Project Files     [IN PROGRESS]
+  - Next.js project setup
+  - TypeScript types
+  - Zone config (5 zones, NOAA IDs)
+  - CLAUDE.md, progress.txt, implementation-plan.md
+  - .env.local with Trio API key
+  - globals.css + root layout
+  - Install ngrok
+  - GitHub repo created + pushed
+
+Block 2: API Clients                              [ ]
+  - Trio API client (all 7 endpoints)
+  - NOAA client (NDBC text parser + CO-OPS JSON)
+  - Manual testing against real APIs
+
+Block 3: Store + Risk Engine + Actions            [ ]
+  - In-memory store singleton
+  - Risk score computation (weighted sum)
+  - Context-based suggested actions
+
+Block 4: API Routes                               [ ]
+  - GET /api/zones
+  - GET /api/zones/[zoneId]
+  - POST /api/system/start
+  - GET /api/system/status
+  - POST /api/webhooks/trio
+  - GET /api/patrol/alerts
+
+Block 5: Orchestrator + E2E Test                  [ ]
+  - Job lifecycle management
+  - Timer-based polling (check-once, NOAA, digest rotation)
+  - Auto-restart on job stop
+  - End-to-end test with real Trio + NOAA
+
+Block 6: Splash + Dashboard Skeleton              [ ]
+  - Splash page with Baywatch branding
+  - Dashboard CSS Grid layout
+  - StatusBar component
+  - useZonePolling hook
+
+Block 7: Map + Zone Panel                         [ ]
+  - SVG coastline map with zone markers
+  - ZonePanel (video + gauge + env data + narrative)
+  - Zone selection interaction
+
+Block 8: Feed + Actions                           [ ]
+  - AlertFeed + AlertFeedItem
+  - ActionCards (context-based)
+  - Wire to polling data
+
+Block 9: Patrol Page                              [ ]
+  - Name + zone login
+  - Alert card feed
+  - Browser Notification API
+  - Mobile-optimized CSS
+
+Block 10: Polish + Demo Prep                      [ ]
+  - CSS animations
+  - Graceful degradation (offline streams)
+  - Error handling
+  - YouTube stream URLs configured
+  - Full demo flow tested
