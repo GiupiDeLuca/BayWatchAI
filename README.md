@@ -244,9 +244,35 @@ Data includes: wave height (m), dominant wave period (s), water temperature (C),
 
 ---
 
-## Demo Mode
+## App Views
 
-For hackathon presentations, the system auto-seeds realistic data on start. You can also manually trigger events:
+The app has **4 views**, each serving a different role:
+
+| Path | View | Purpose |
+|---|---|---|
+| `/` | Splash Page | Baywatch AI landing page with branding and "Enter Operations Center" CTA |
+| `/dashboard` | Operations Center | Main desktop dashboard — zone cards, illustrated maps, alert feed, action cards |
+| `/patrol` | Mobile Patrol | Mobile-first view for field lifeguards — login with name + zone, receive alerts |
+| `/demo` | Demo Trigger Panel | Fire events manually per zone for hackathon presentations |
+
+### `/patrol` — Mobile Lifeguard View
+
+This is designed to be opened **on a phone** by field lifeguards. To access it from a mobile device:
+
+1. Make sure **ngrok** is running on your machine (`ngrok http 3000`)
+2. Open the ngrok HTTPS URL + `/patrol` on your phone's browser:
+   ```
+   https://your-ngrok-url.ngrok-free.app/patrol
+   ```
+3. Log in with your name and select your assigned beach zone
+4. Tap **"Enable Push Notifications"** to get browser alerts when new incidents are detected
+5. The view polls every 5 seconds — you'll see risk score, active advisories, and recent alerts for your zone
+
+> Tip: Add it to your home screen for a full-screen app-like experience (Safari → Share → Add to Home Screen).
+
+### `/demo` — Demo Trigger Panel
+
+For hackathon presentations, the system **auto-seeds realistic data** when you click "Enter Operations Center" on the splash page. You can also manually trigger events:
 
 **Trigger Panel:** Visit [localhost:3000/demo](http://localhost:3000/demo) to fire specific events per zone:
 - `swimmers_detected` | `crowd_waterline` | `emergency_vehicle`
@@ -259,6 +285,12 @@ curl -X POST http://localhost:3000/api/demo/trigger \
   -H "Content-Type: application/json" \
   -d '{"zoneId": "venice", "event": "emergency_vehicle"}'
 ```
+
+**Demo flow for presentations:**
+1. Open the dashboard on a laptop (`localhost:3000` → Enter Operations Center)
+2. Open `/patrol` on a phone via ngrok (log in as "Mitch" at Venice Beach)
+3. From a second browser tab, go to `/demo` and trigger events
+4. Watch alerts appear on both the dashboard and the phone in real-time
 
 ---
 

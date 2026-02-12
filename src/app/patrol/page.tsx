@@ -123,9 +123,6 @@ export default function PatrolPage() {
               <option value="santa-monica">Santa Monica Beach</option>
               <option value="venice">Venice Beach</option>
               <option value="manhattan">Manhattan Beach</option>
-              <option value="huntington">Huntington Beach</option>
-              <option value="newport">Newport Beach</option>
-              <option value="laguna">Laguna Beach</option>
             </select>
             <button
               className={styles.loginBtn}
