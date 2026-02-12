@@ -1,8 +1,7 @@
 .container {
-  border-top: 1px solid var(--color-surface-2);
   flex-shrink: 0;
-  max-height: 280px;
   overflow-y: auto;
+  background: var(--color-surface);
 }
 
 .header {
@@ -13,7 +12,7 @@
   border-bottom: 1px solid var(--color-surface-2);
   position: sticky;
   top: 0;
-  background: var(--color-bg);
+  background: var(--color-surface);
   z-index: 1;
 }
 
@@ -27,7 +26,7 @@
 .count {
   font-family: var(--font-display);
   font-size: 1rem;
-  color: var(--color-amber);
+  color: var(--color-red);
 }
 
 .empty {
@@ -51,7 +50,7 @@
   font-style: italic;
   font-size: 0.65rem;
   color: var(--color-sand);
-  opacity: 0.4;
+  opacity: 0.6;
   font-family: var(--font-body);
 }
 
@@ -68,13 +67,14 @@
   padding: var(--space-sm);
   border-radius: var(--radius-md);
   border-left: 3px solid transparent;
-  background: var(--color-surface);
+  background: var(--color-bg);
   animation: slide-in-right 0.3s ease;
+  box-shadow: var(--shadow-sm);
 }
 
-.card.urgent { border-left-color: var(--color-red); background: rgba(239, 68, 68, 0.05); }
-.card.warning { border-left-color: var(--color-amber); background: rgba(245, 158, 11, 0.05); }
-.card.info { border-left-color: var(--color-blue); background: rgba(59, 130, 246, 0.05); }
+.card.urgent { border-left-color: var(--color-red); background: rgba(230, 57, 70, 0.06); }
+.card.warning { border-left-color: var(--color-amber); background: rgba(212, 147, 13, 0.06); }
+.card.info { border-left-color: var(--color-blue); background: rgba(29, 111, 165, 0.06); }
 
 .cardLeft {
   display: flex;
@@ -113,9 +113,9 @@
   border-radius: var(--radius-full);
 }
 
-.p_urgent { background: rgba(239, 68, 68, 0.2); color: var(--color-red); }
-.p_warning { background: rgba(245, 158, 11, 0.2); color: var(--color-amber); }
-.p_info { background: rgba(59, 130, 246, 0.2); color: var(--color-blue); }
+.p_urgent { background: rgba(230, 57, 70, 0.15); color: var(--color-red); }
+.p_warning { background: rgba(212, 147, 13, 0.15); color: var(--color-amber); }
+.p_info { background: rgba(29, 111, 165, 0.15); color: var(--color-blue); }
 
 .cardDesc {
   font-size: 0.7rem;

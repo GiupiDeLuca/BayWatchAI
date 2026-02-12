@@ -66,10 +66,21 @@ function createInitialState(): SystemState {
   };
 }
 
-// ===== Module-Level Singleton =====
-// Persists across requests in the same Node.js process (self-hosted Next.js)
+// ===== Global Singleton =====
+// Use globalThis to survive Next.js dev mode HMR (hot module replacement).
+// In dev mode, module-level variables get reset on every file change.
+// globalThis persists for the lifetime of the Node.js process.
 
-let state: SystemState = createInitialState();
+const GLOBAL_KEY = '__baywatch_state__' as const;
+
+function getOrCreateState(): SystemState {
+  if (!(globalThis as Record<string, unknown>)[GLOBAL_KEY]) {
+    (globalThis as Record<string, unknown>)[GLOBAL_KEY] = createInitialState();
+  }
+  return (globalThis as Record<string, unknown>)[GLOBAL_KEY] as SystemState;
+}
+
+let state: SystemState = getOrCreateState();
 
 const MAX_ALERTS_PER_ZONE = 50;
 const MAX_ERRORS = 20;
@@ -197,7 +208,9 @@ export function findZoneByJobId(jobId: string): string | null {
   return null;
 }
 
-/** Reset to initial state (useful for testing) */
+/** Reset to initial state (useful for testing and force-restart) */
 export function resetState(): void {
-  state = createInitialState();
+  const fresh = createInitialState();
+  (globalThis as Record<string, unknown>)[GLOBAL_KEY] = fresh;
+  state = fresh;
 }

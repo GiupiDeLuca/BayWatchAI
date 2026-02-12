@@ -1,4 +1,5 @@
 /* ===== Baywatch AI — Global Styles ===== */
+/* 80s/90s Warm Beach Aesthetic */
 
 /* Bebas Neue — retro lifeguard display font */
 @font-face {
@@ -10,31 +11,32 @@
 }
 
 :root {
-  /* Background */
-  --color-bg: #0a0a0f;
-  --color-surface: #141420;
-  --color-surface-2: #1e1e2e;
-  --color-surface-3: #2a2a3e;
+  /* Background — warm cream / sand */
+  --color-bg: #faf6ee;
+  --color-surface: #ffffff;
+  --color-surface-2: #f2ebe0;
+  --color-surface-3: #e6ddd0;
 
   /* Baywatch Palette */
-  --color-red: #ef4444;
-  --color-red-dark: #b91c1c;
-  --color-orange: #f97316;
-  --color-amber: #f59e0b;
-  --color-green: #22c55e;
-  --color-blue: #3b82f6;
-  --color-cyan: #06b6d4;
-  --color-sand: #f4d98c;
+  --color-red: #e63946;
+  --color-red-dark: #c1121f;
+  --color-orange: #f77f00;
+  --color-amber: #d4930d;
+  --color-green: #2a9d4e;
+  --color-blue: #1d6fa5;
+  --color-cyan: #219ebc;
+  --color-sand: #d4a055;
+  --color-sand-light: #f4d98c;
 
-  /* Text */
-  --color-text: #f1f1f1;
-  --color-text-muted: #9ca3af;
-  --color-text-dim: #6b7280;
+  /* Text — dark on light */
+  --color-text: #2b2d42;
+  --color-text-muted: #5c6370;
+  --color-text-dim: #9ca3af;
 
   /* Risk Level Colors */
-  --color-risk-low: #22c55e;
-  --color-risk-elevated: #f59e0b;
-  --color-risk-high: #ef4444;
+  --color-risk-low: #2a9d4e;
+  --color-risk-elevated: #d4930d;
+  --color-risk-high: #e63946;
 
   /* Fonts */
   --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
@@ -56,6 +58,11 @@
   --radius-xl: 16px;
   --radius-full: 9999px;
 
+  /* Shadows — warm soft shadows for light theme */
+  --shadow-sm: 0 1px 3px rgba(139, 109, 71, 0.08);
+  --shadow-md: 0 2px 8px rgba(139, 109, 71, 0.1);
+  --shadow-lg: 0 4px 16px rgba(139, 109, 71, 0.12);
+
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
@@ -72,7 +79,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -109,7 +116,7 @@ img {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-surface);
+  background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -128,54 +135,45 @@ img {
 
 /* ===== Animations ===== */
 
-/* Pulse for risk indicators */
 @keyframes pulse-glow {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.7; transform: scale(1.12); }
 }
 
-/* Slide in from right — alert feed items, zone panel */
 @keyframes slide-in-right {
   from { transform: translateX(20px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
 
-/* Gentle fade in */
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-/* Slide up — cards, badges, data elements */
 @keyframes slide-up {
   from { transform: translateY(12px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* Gauge arc fill — used by RiskGauge */
 @keyframes gauge-fill {
   from { stroke-dasharray: 0 188.5; }
 }
 
-/* Scan line effect for the ops center feel */
 @keyframes scan-line {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100vh); }
 }
 
-/* Blink for LIVE badges */
 @keyframes blink-live {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
 
-/* Shimmer loading state */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-/* Utility: shimmer loading placeholder */
 .shimmer-loading {
   background: linear-gradient(
     90deg,
@@ -188,7 +186,6 @@ img {
   border-radius: var(--radius-md);
 }
 
-/* Utility: stagger children animations */
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
 .stagger-children > *:nth-child(2) { animation-delay: 50ms; }
 .stagger-children > *:nth-child(3) { animation-delay: 100ms; }

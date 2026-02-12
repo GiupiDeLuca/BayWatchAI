@@ -3,6 +3,7 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  background: var(--color-surface);
 }
 
 .header {
@@ -59,6 +60,6 @@
   font-style: italic;
   font-size: 0.65rem;
   color: var(--color-sand);
-  opacity: 0.4;
+  opacity: 0.6;
   font-family: var(--font-body);
 }

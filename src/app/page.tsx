@@ -7,7 +7,6 @@ export default function SplashPage() {
   const router = useRouter();
 
   const handleEnter = async () => {
-    // Start monitoring when entering the ops center
     try {
       await fetch('/api/system/start', { method: 'POST' });
     } catch (e) {
@@ -19,6 +18,7 @@ export default function SplashPage() {
   return (
     <div className={styles.container}>
       <div className={styles.overlay} />
+
       <div className={styles.content}>
         <div className={styles.badge}>POWERED BY TRIO AI VISION</div>
         <h1 className={styles.title}>

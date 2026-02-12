@@ -6,27 +6,40 @@
   overflow: hidden;
 }
 
-.main {
+/* Top row: 3 zone cards with video + data */
+.zoneRow {
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 0;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--color-surface-3);
+  border-bottom: 1px solid var(--color-surface-3);
+  flex-shrink: 0;
+}
+
+/* Bottom row: map + feed + actions */
+.bottomRow {
+  display: grid;
+  grid-template-columns: 280px 1fr 340px;
   flex: 1;
   overflow: hidden;
 }
 
-.leftColumn {
+.mapColumn {
+  border-right: 1px solid var(--color-surface-2);
+  overflow-y: auto;
+}
+
+.feedColumn {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--color-surface-2);
+}
+
+.actionsColumn {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding: var(--space-md);
-  gap: var(--space-md);
-}
-
-.rightColumn {
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid var(--color-surface-2);
-  overflow: hidden;
 }
 
 /* Loading state */

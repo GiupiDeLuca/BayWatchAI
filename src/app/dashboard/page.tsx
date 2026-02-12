@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import styles from './page.module.css';
 import { StatusBar } from './components/StatusBar';
-import { CoastlineMap } from './components/CoastlineMap';
-import { ZonePanel } from './components/ZonePanel';
+import { ZoneMiniMaps } from './components/ZoneMiniMaps';
+import { ZoneSummaryStrip } from './components/ZoneSummaryStrip';
 import { AlertFeed } from './components/AlertFeed';
 import { ActionCards } from './components/ActionCards';
 import type { ZoneState, SuggestedAction } from '@/types';
@@ -51,8 +51,6 @@ export default function DashboardPage() {
   const { zones, system, error } = useZonePolling(5000);
   const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
 
-  const selectedZone = zones.find((z) => z.config.id === selectedZoneId) || null;
-
   // Collect all alerts across zones for the feed
   const allAlerts = zones
     .flatMap((z) => z.alerts.map((a) => ({ ...a, zoneName: z.config.shortName })))
@@ -62,7 +60,6 @@ export default function DashboardPage() {
   // Collect all actions across zones
   const allActions = zones.flatMap((z) => z.actions || []);
 
-  // Show loading skeleton while first data arrives
   const isLoading = zones.length === 0 && !error;
 
   return (
@@ -76,29 +73,38 @@ export default function DashboardPage() {
           <span className={styles.loadingQuote}>&ldquo;Mitch, the ocean doesn&apos;t care how ready you think you are.&rdquo;</span>
         </div>
       ) : (
-        <div className={styles.main}>
-          <div className={styles.leftColumn}>
-            <CoastlineMap
+        <>
+          {/* Top row: 3 zone cards with video + environmental data */}
+          <div className={styles.zoneRow}>
+            <ZoneSummaryStrip
               zones={zones}
               selectedZoneId={selectedZoneId}
               onSelectZone={(id) => setSelectedZoneId(id === selectedZoneId ? null : id)}
             />
-            {selectedZone && (
-              <ZonePanel
-                zone={selectedZone}
-                onClose={() => setSelectedZoneId(null)}
-              />
-            )}
           </div>
 
-          <div className={styles.rightColumn}>
-            <AlertFeed
-              alerts={allAlerts}
-              onZoneClick={(zoneId) => setSelectedZoneId(zoneId)}
-            />
-            <ActionCards actions={allActions} />
+          {/* Bottom row: map | feed | actions */}
+          <div className={styles.bottomRow}>
+            <div className={styles.mapColumn}>
+              <ZoneMiniMaps
+                zones={zones}
+                selectedZoneId={selectedZoneId}
+                onSelectZone={(id) => setSelectedZoneId(id === selectedZoneId ? null : id)}
+              />
+            </div>
+
+            <div className={styles.feedColumn}>
+              <AlertFeed
+                alerts={allAlerts}
+                onZoneClick={(zoneId) => setSelectedZoneId(zoneId)}
+              />
+            </div>
+
+            <div className={styles.actionsColumn}>
+              <ActionCards actions={allActions} />
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
