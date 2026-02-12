@@ -25,7 +25,9 @@ export function ActionCards({ actions }: { actions: SuggestedAction[] }) {
           <span className={styles.title}>RECOMMENDED ACTIONS</span>
         </div>
         <div className={styles.empty}>
-          All clear. No actions recommended.
+          <span className={styles.emptyIcon}>&#x2705;</span>
+          <span>All clear. No actions recommended.</span>
+          <span className={styles.emptyHint}>Stay frosty, Buchannon.</span>
         </div>
       </div>
     );

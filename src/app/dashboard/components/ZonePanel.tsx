@@ -41,10 +41,13 @@ export function ZonePanel({
               />
             ) : (
               <div className={styles.offline}>
-                <span className={styles.offlineIcon}>&#x1F4F7;</span>
-                <span>STREAM OFFLINE</span>
+                <span className={styles.offlineIcon}>&#x1F3D6;</span>
+                <span>TOWER CAM OFFLINE</span>
                 <span className={styles.offlineSub}>
-                  Environmental data still active
+                  NOAA environmental data still active
+                </span>
+                <span className={styles.offlineQuote}>
+                  &ldquo;The ocean never sleeps&rdquo;
                 </span>
               </div>
             )}

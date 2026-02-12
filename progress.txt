@@ -1,7 +1,7 @@
 BAYWATCH AI — Build Progress
 =============================
 
-Block 1: Scaffolding + Types + Project Files     [IN PROGRESS]
+Block 1: Scaffolding + Types + Project Files     [DONE]
   - Next.js project setup
   - TypeScript types
   - Zone config (5 zones, NOAA IDs)
@@ -11,17 +11,17 @@ Block 1: Scaffolding + Types + Project Files     [IN PROGRESS]
   - Install ngrok
   - GitHub repo created + pushed
 
-Block 2: API Clients                              [ ]
+Block 2: API Clients                              [DONE]
   - Trio API client (all 7 endpoints)
   - NOAA client (NDBC text parser + CO-OPS JSON)
   - Manual testing against real APIs
 
-Block 3: Store + Risk Engine + Actions            [ ]
+Block 3: Store + Risk Engine + Actions            [DONE]
   - In-memory store singleton
   - Risk score computation (weighted sum)
   - Context-based suggested actions
 
-Block 4: API Routes                               [ ]
+Block 4: API Routes                               [DONE]
   - GET /api/zones
   - GET /api/zones/[zoneId]
   - POST /api/system/start
@@ -29,37 +29,39 @@ Block 4: API Routes                               [ ]
   - POST /api/webhooks/trio
   - GET /api/patrol/alerts
 
-Block 5: Orchestrator + E2E Test                  [ ]
+Block 5: Orchestrator + E2E Test                  [DONE]
   - Job lifecycle management
   - Timer-based polling (check-once, NOAA, digest rotation)
   - Auto-restart on job stop
   - End-to-end test with real Trio + NOAA
 
-Block 6: Splash + Dashboard Skeleton              [ ]
+Block 6: Splash + Dashboard Skeleton              [DONE]
   - Splash page with Baywatch branding
   - Dashboard CSS Grid layout
   - StatusBar component
   - useZonePolling hook
 
-Block 7: Map + Zone Panel                         [ ]
+Block 7: Map + Zone Panel                         [DONE]
   - SVG coastline map with zone markers
   - ZonePanel (video + gauge + env data + narrative)
   - Zone selection interaction
 
-Block 8: Feed + Actions                           [ ]
+Block 8: Feed + Actions                           [DONE]
   - AlertFeed + AlertFeedItem
   - ActionCards (context-based)
   - Wire to polling data
 
-Block 9: Patrol Page                              [ ]
+Block 9: Patrol Page                              [DONE]
   - Name + zone login
   - Alert card feed
   - Browser Notification API
   - Mobile-optimized CSS
 
-Block 10: Polish + Demo Prep                      [ ]
-  - CSS animations
-  - Graceful degradation (offline streams)
-  - Error handling
-  - YouTube stream URLs configured
-  - Full demo flow tested
+Block 10: Polish + Demo Prep                      [DONE]
+  - CSS animations (slide-up, gauge-fill, blink-live, wave-drift, shimmer, spin)
+  - Graceful degradation (loading state, offline tower cam, retry with backoff)
+  - Error handling (orchestrator exponential retry, API error responses)
+  - YouTube stream URLs configured: Santa Monica, Venice, Manhattan Beach
+  - Baywatch TV show references throughout (Mitch quotes, theme song, tower talk)
+  - SVG favicon, ocean gradient map, CRT scan-line overlay
+  - Full build passing, all routes verified

@@ -105,6 +105,7 @@ export default function PatrolPage() {
             <span className={styles.logoAI}>AI</span>
           </div>
           <h2 className={styles.loginTitle}>PATROL CHECK-IN</h2>
+          <p className={styles.loginSub}>Report to your tower. Stay ready.</p>
           <div className={styles.loginForm}>
             <input
               className={styles.input}
@@ -119,8 +120,9 @@ export default function PatrolPage() {
               onChange={(e) => setSelectedZone(e.target.value)}
             >
               <option value="">Select your zone</option>
-              <option value="venice">Venice Beach</option>
               <option value="santa-monica">Santa Monica Beach</option>
+              <option value="venice">Venice Beach</option>
+              <option value="manhattan">Manhattan Beach</option>
               <option value="huntington">Huntington Beach</option>
               <option value="newport">Newport Beach</option>
               <option value="laguna">Laguna Beach</option>
@@ -206,7 +208,7 @@ export default function PatrolPage() {
         <span className={styles.sectionTitle}>RECENT ALERTS</span>
         {(!data?.alerts || data.alerts.length === 0) ? (
           <div className={styles.noAlerts}>
-            Monitoring active. No alerts yet.
+            &#x1F6A9; All quiet on the beach. Stay vigilant, guard.
           </div>
         ) : (
           data.alerts.map((alert) => (

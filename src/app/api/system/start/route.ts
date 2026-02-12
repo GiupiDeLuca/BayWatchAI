@@ -7,9 +7,6 @@ export const dynamic = 'force-dynamic';
  * POST /api/system/start
  * Initialize all monitoring jobs, timers, and data polling.
  * Idempotent: if already initialized, returns current status.
- * 
- * The actual orchestrator will be wired in Block 5.
- * For now, this is a stub that marks the system as ready.
  */
 export async function POST() {
   if (isInitialized()) {
@@ -20,8 +17,6 @@ export async function POST() {
   }
 
   try {
-    // Orchestrator will be imported and called here in Block 5
-    // For now, return a stub response
     const { startAll } = await import('@/lib/orchestrator');
     const result = await startAll();
 

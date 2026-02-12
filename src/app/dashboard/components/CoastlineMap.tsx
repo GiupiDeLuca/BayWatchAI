@@ -27,8 +27,20 @@ export function CoastlineMap({
         className={styles.map}
         xmlns="http://www.w3.org/2000/svg"
       >
+        {/* Defs for gradient/patterns */}
+        <defs>
+          <linearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0a1525" />
+            <stop offset="100%" stopColor="#0f2040" />
+          </linearGradient>
+          <pattern id="wavePattern" x="0" y="0" width="60" height="20" patternUnits="userSpaceOnUse">
+            <path d="M0 10 Q15 5 30 10 Q45 15 60 10" fill="none" stroke="#142d52" strokeWidth="0.5" opacity="0.4" />
+          </pattern>
+        </defs>
+
         {/* Ocean background */}
-        <rect width="600" height="500" fill="#0c1929" />
+        <rect width="600" height="500" fill="url(#oceanGrad)" />
+        <rect width="600" height="500" fill="url(#wavePattern)" className={styles.waveOverlay} />
 
         {/* Ocean grid lines for ops-center feel */}
         {Array.from({ length: 10 }).map((_, i) => (
@@ -169,9 +181,15 @@ export function CoastlineMap({
           );
         })}
 
-        {/* Map label */}
+        {/* Map labels */}
         <text x="15" y="490" fill="#333355" fontSize="9" fontFamily="var(--font-mono)">
           BAYWATCH AI // COASTAL SURVEILLANCE GRID
+        </text>
+        <text x="15" y="20" fill="#1a2744" fontSize="7" fontFamily="var(--font-mono)">
+          PACIFIC OCEAN
+        </text>
+        <text x="420" y="20" fill="#1a2744" fontSize="7" fontFamily="var(--font-mono)">
+          LOS ANGELES / ORANGE COUNTY
         </text>
       </svg>
 

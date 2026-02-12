@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Baywatch AI — Coast-Wide Beach Safety Intelligence',
   description: 'Real-time beach safety intelligence powered by AI vision and environmental data. Monitoring the LA to Orange County coastline.',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.svg',
   },
 };
 

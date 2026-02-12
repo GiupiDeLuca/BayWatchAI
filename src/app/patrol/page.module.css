@@ -41,6 +41,12 @@
   color: var(--color-text-muted);
 }
 
+.loginSub {
+  font-size: 0.75rem;
+  color: var(--color-text-dim);
+  font-style: italic;
+}
+
 .loginForm {
   width: 100%;
   display: flex;

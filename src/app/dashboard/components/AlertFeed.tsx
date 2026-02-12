@@ -24,7 +24,9 @@ export function AlertFeed({
       <div className={styles.feed}>
         {alerts.length === 0 ? (
           <div className={styles.empty}>
-            <span>Monitoring active. Waiting for events...</span>
+            <span className={styles.emptyIcon}>&#x1F6A9;</span>
+            <span>All quiet on the beach. Monitoring active...</span>
+            <span className={styles.emptyQuote}>&ldquo;Don&apos;t worry, I&apos;ll be watching.&rdquo;</span>
           </div>
         ) : (
           alerts.map((alert) => (

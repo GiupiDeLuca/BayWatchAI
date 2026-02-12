@@ -32,7 +32,7 @@ export default function SplashPage() {
         <p className={styles.subtitle}>
           Real-time AI monitoring of the LA to Orange County coastline.
           <br />
-          Powered by live video analysis and ocean environmental data.
+          Somebody&apos;s gotta watch over this beach. Today, it&apos;s AI.
         </p>
         <button className={styles.enterButton} onClick={handleEnter}>
           ENTER OPERATIONS CENTER
@@ -44,18 +44,23 @@ export default function SplashPage() {
           </div>
           <div className={styles.stat}>
             <span className={styles.statNumber}>24/7</span>
-            <span className={styles.statLabel}>AI Monitoring</span>
+            <span className={styles.statLabel}>AI Vision</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statNumber}>LIVE</span>
-            <span className={styles.statLabel}>Video + Ocean Data</span>
+            <span className={styles.statLabel}>Video + NOAA Data</span>
           </div>
+        </div>
+        <div className={styles.readyLine}>
+          &ldquo;I&apos;m always ready.&rdquo; &mdash; Mitch Buchannon
         </div>
       </div>
       <div className={styles.footer}>
         <span>BAYWATCH AI &copy; 2026</span>
         <span className={styles.footerDot}>&bull;</span>
-        <span>Some people stand in the darkness, afraid to step into the light</span>
+        <span className={styles.footerLyric}>
+          &#9834; Some people stand in the darkness, afraid to step into the light &#9834;
+        </span>
       </div>
     </div>
   );

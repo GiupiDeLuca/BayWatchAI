@@ -36,6 +36,23 @@
   color: var(--color-text-dim);
   font-family: var(--font-mono);
   font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.emptyIcon {
+  font-size: 1.5rem;
+  opacity: 0.5;
+}
+
+.emptyHint {
+  font-style: italic;
+  font-size: 0.65rem;
+  color: var(--color-sand);
+  opacity: 0.4;
+  font-family: var(--font-body);
 }
 
 .cards {

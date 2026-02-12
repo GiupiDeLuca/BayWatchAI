@@ -167,14 +167,16 @@ export async function stopAll(): Promise<void> {
 
 // ===== Live Monitor Restart =====
 
-async function restartLiveMonitor(zoneId: string): Promise<void> {
+async function restartLiveMonitor(zoneId: string, attempt = 1): Promise<void> {
+  const MAX_RETRIES = 3;
   const zone = getZone(zoneId);
   if (!zone || !zone.config.streamUrl || !zone.streamOnline) return;
 
   const webhookUrl = `${process.env.NGROK_URL}/api/webhooks/trio`;
 
-  // Brief delay before restarting
-  await new Promise((resolve) => setTimeout(resolve, JOB_RESTART_DELAY_MS));
+  // Exponential backoff: 3s, 6s, 12s
+  const delay = JOB_RESTART_DELAY_MS * Math.pow(2, attempt - 1);
+  await new Promise((resolve) => setTimeout(resolve, delay));
 
   try {
     const result = await trio.startLiveMonitor(
@@ -183,10 +185,15 @@ async function restartLiveMonitor(zoneId: string): Promise<void> {
       webhookUrl,
     );
     setJobId(zoneId, 'liveMonitor', result.job_id);
-    console.log(`[orchestrator] Zone ${zoneId}: live-monitor restarted (job ${result.job_id})`);
+    console.log(`[orchestrator] Zone ${zoneId}: live-monitor restarted (job ${result.job_id}, attempt ${attempt})`);
   } catch (e) {
-    console.error(`[orchestrator] Zone ${zoneId}: restart failed`, e);
-    addError(`Zone ${zoneId}: live-monitor restart failed`);
+    console.error(`[orchestrator] Zone ${zoneId}: restart failed (attempt ${attempt})`, e);
+    if (attempt < MAX_RETRIES) {
+      console.log(`[orchestrator] Zone ${zoneId}: retrying in ${delay * 2}ms...`);
+      restartLiveMonitor(zoneId, attempt + 1).catch(() => {});
+    } else {
+      addError(`Zone ${zoneId}: live-monitor restart failed after ${MAX_RETRIES} attempts`);
+    }
   }
 }
 

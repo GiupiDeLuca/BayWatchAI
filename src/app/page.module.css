@@ -16,6 +16,7 @@
     #f97316 90%,
     #fbbf24 100%
   );
+  animation: fade-in 0.6s ease;
 }
 
 .overlay {
@@ -41,6 +42,7 @@
   align-items: center;
   text-align: center;
   gap: 20px;
+  animation: slide-up 0.8s ease;
 }
 
 .badge {
@@ -145,6 +147,13 @@
   color: var(--color-text-muted);
 }
 
+.readyLine {
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--color-text-dim);
+  margin-top: 4px;
+}
+
 .footer {
   position: absolute;
   bottom: 24px;
@@ -155,6 +164,27 @@
   align-items: center;
 }
 
+.footerLyric {
+  font-style: italic;
+  opacity: 0.7;
+}
+
 .footerDot {
   opacity: 0.5;
+}
+
+/* Scan line overlay for cinematic feel */
+.container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.015) 3px,
+    rgba(0, 0, 0, 0.015) 6px
+  );
+  pointer-events: none;
+  z-index: 2;
 }

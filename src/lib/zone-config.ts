@@ -7,38 +7,52 @@ import { ZoneConfig } from '@/types';
  */
 export const ZONE_CONFIGS: ZoneConfig[] = [
   {
-    id: 'venice',
-    name: 'Venice Beach',
-    shortName: 'Venice',
-    streamUrl: '', // TODO: Add YouTube Live URL
-    enabled: false,
-    lat: 33.985,
-    lng: -118.472,
-    noaa: {
-      buoyStationId: '46221',    // Santa Monica Bay waverider buoy
-      tideStationId: '9410840',  // Santa Monica tide station
-    },
-    mapPosition: { x: 115, y: 165 },
-  },
-  {
     id: 'santa-monica',
     name: 'Santa Monica Beach',
     shortName: 'Santa Monica',
-    streamUrl: '', // TODO: Add YouTube Live URL
-    enabled: false,
+    streamUrl: 'https://www.youtube.com/watch?v=qmE7U1YZPQA',
+    enabled: true,
     lat: 34.008,
     lng: -118.497,
     noaa: {
-      buoyStationId: '46221',    // Santa Monica Bay waverider buoy (shared with Venice)
+      buoyStationId: '46221',    // Santa Monica Bay waverider buoy
       tideStationId: '9410840',  // Santa Monica tide station
     },
     mapPosition: { x: 95, y: 135 },
   },
   {
+    id: 'venice',
+    name: 'Venice Beach',
+    shortName: 'Venice',
+    streamUrl: 'https://www.youtube.com/watch?v=GKfBZC1d2QE',
+    enabled: true,
+    lat: 33.985,
+    lng: -118.472,
+    noaa: {
+      buoyStationId: '46221',    // Santa Monica Bay waverider buoy (shared with Santa Monica)
+      tideStationId: '9410840',  // Santa Monica tide station
+    },
+    mapPosition: { x: 115, y: 165 },
+  },
+  {
+    id: 'manhattan',
+    name: 'Manhattan Beach',
+    shortName: 'Manhattan',
+    streamUrl: 'https://www.youtube.com/watch?v=D4B4MdxLkQo',
+    enabled: true,
+    lat: 33.884,
+    lng: -118.410,
+    noaa: {
+      buoyStationId: '46221',    // Santa Monica Bay waverider buoy (shared)
+      tideStationId: '9410840',  // Santa Monica tide station (nearest)
+    },
+    mapPosition: { x: 155, y: 215 },
+  },
+  {
     id: 'huntington',
     name: 'Huntington Beach',
     shortName: 'Huntington',
-    streamUrl: '', // TODO: Add YouTube Live URL
+    streamUrl: '',
     enabled: false,
     lat: 33.655,
     lng: -117.999,
@@ -52,7 +66,7 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
     id: 'newport',
     name: 'Newport Beach',
     shortName: 'Newport',
-    streamUrl: '', // TODO: Add YouTube Live URL
+    streamUrl: '',
     enabled: false,
     lat: 33.593,
     lng: -117.881,
@@ -66,7 +80,7 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
     id: 'laguna',
     name: 'Laguna Beach',
     shortName: 'Laguna',
-    streamUrl: '', // TODO: Add YouTube Live URL
+    streamUrl: '',
     enabled: false,
     lat: 33.542,
     lng: -117.783,

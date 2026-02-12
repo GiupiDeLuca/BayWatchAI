@@ -78,3 +78,13 @@
 .legendLow { background: var(--color-risk-low); }
 .legendElevated { background: var(--color-risk-elevated); }
 .legendHigh { background: var(--color-risk-high); }
+
+/* Subtle animated wave overlay in the ocean */
+@keyframes wave-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(60px); }
+}
+
+.waveOverlay {
+  animation: wave-drift 8s linear infinite;
+}

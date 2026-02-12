@@ -126,18 +126,71 @@ img {
 .risk-elevated { color: var(--color-risk-elevated); }
 .risk-high { color: var(--color-risk-high); }
 
-/* Pulse animation for risk indicators */
+/* ===== Animations ===== */
+
+/* Pulse for risk indicators */
 @keyframes pulse-glow {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.7; transform: scale(1.12); }
 }
 
+/* Slide in from right — alert feed items, zone panel */
 @keyframes slide-in-right {
   from { transform: translateX(20px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
 
+/* Gentle fade in */
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Slide up — cards, badges, data elements */
+@keyframes slide-up {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Gauge arc fill — used by RiskGauge */
+@keyframes gauge-fill {
+  from { stroke-dasharray: 0 188.5; }
+}
+
+/* Scan line effect for the ops center feel */
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Blink for LIVE badges */
+@keyframes blink-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Shimmer loading state */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Utility: shimmer loading placeholder */
+.shimmer-loading {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 25%,
+    var(--color-surface-3) 50%,
+    var(--color-surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Utility: stagger children animations */
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }

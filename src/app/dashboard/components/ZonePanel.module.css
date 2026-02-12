@@ -103,6 +103,14 @@
   letter-spacing: 1px;
 }
 
+.offlineQuote {
+  font-size: 0.6rem;
+  font-style: italic;
+  color: var(--color-sand);
+  opacity: 0.5;
+  margin-top: 4px;
+}
+
 .narrative {
   background: var(--color-surface-2);
   border-radius: var(--radius-md);

@@ -62,33 +62,44 @@ export default function DashboardPage() {
   // Collect all actions across zones
   const allActions = zones.flatMap((z) => z.actions || []);
 
+  // Show loading skeleton while first data arrives
+  const isLoading = zones.length === 0 && !error;
+
   return (
     <div className={styles.dashboard}>
       <StatusBar system={system} error={error} />
 
-      <div className={styles.main}>
-        <div className={styles.leftColumn}>
-          <CoastlineMap
-            zones={zones}
-            selectedZoneId={selectedZoneId}
-            onSelectZone={(id) => setSelectedZoneId(id === selectedZoneId ? null : id)}
-          />
-          {selectedZone && (
-            <ZonePanel
-              zone={selectedZone}
-              onClose={() => setSelectedZoneId(null)}
+      {isLoading ? (
+        <div className={styles.loading}>
+          <div className={styles.loadingSpinner} />
+          <span className={styles.loadingText}>Initializing surveillance grid...</span>
+          <span className={styles.loadingQuote}>&ldquo;Mitch, the ocean doesn&apos;t care how ready you think you are.&rdquo;</span>
+        </div>
+      ) : (
+        <div className={styles.main}>
+          <div className={styles.leftColumn}>
+            <CoastlineMap
+              zones={zones}
+              selectedZoneId={selectedZoneId}
+              onSelectZone={(id) => setSelectedZoneId(id === selectedZoneId ? null : id)}
             />
-          )}
-        </div>
+            {selectedZone && (
+              <ZonePanel
+                zone={selectedZone}
+                onClose={() => setSelectedZoneId(null)}
+              />
+            )}
+          </div>
 
-        <div className={styles.rightColumn}>
-          <AlertFeed
-            alerts={allAlerts}
-            onZoneClick={(zoneId) => setSelectedZoneId(zoneId)}
-          />
-          <ActionCards actions={allActions} />
+          <div className={styles.rightColumn}>
+            <AlertFeed
+              alerts={allAlerts}
+              onZoneClick={(zoneId) => setSelectedZoneId(zoneId)}
+            />
+            <ActionCards actions={allActions} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
