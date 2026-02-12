@@ -1,0 +1,313 @@
+/* ===== Login ===== */
+
+.loginContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #0a0a0f 0%, #1a0a0a 50%, #3d1515 100%);
+  padding: var(--space-md);
+}
+
+.loginCard {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl) var(--space-xl);
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  border: 1px solid var(--color-surface-2);
+}
+
+.loginLogo {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+}
+
+.logoBay { color: #fff; }
+.logoWatch { color: var(--color-red); }
+.logoAI { font-size: 1rem; color: var(--color-amber); }
+
+.loginTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 4px;
+  color: var(--color-text-muted);
+}
+
+.loginForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.input, .select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-surface-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.input:focus, .select:focus {
+  border-color: var(--color-red);
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.loginBtn {
+  width: 100%;
+  padding: 14px;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-red) 0%, var(--color-red-dark) 100%);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
+
+.loginBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+}
+
+.loginBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== Patrol View ===== */
+
+.container {
+  min-height: 100vh;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-surface-2);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerLogo {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  display: flex;
+  gap: 3px;
+  align-items: baseline;
+}
+
+.logoutBtn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--color-text-dim);
+  padding: 6px 12px;
+  border: 1px solid var(--color-surface-3);
+  border-radius: var(--radius-md);
+}
+
+.patrolInfo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.guardName {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.zoneName {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  color: var(--color-sand);
+}
+
+.riskBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  border: 1px solid;
+}
+
+.riskLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--color-text-dim);
+}
+
+.riskScore {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.riskLevel {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  margin-left: auto;
+}
+
+/* Notifications */
+.notifBtn {
+  margin: var(--space-sm) var(--space-md);
+  padding: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-amber);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+/* Alert list */
+.alertList {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  color: var(--color-text-dim);
+  padding-top: var(--space-sm);
+}
+
+.noAlerts {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+/* Action cards */
+.actionSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.actionCard {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border-left: 3px solid;
+}
+
+.action_urgent {
+  background: rgba(239, 68, 68, 0.1);
+  border-left-color: var(--color-red);
+}
+
+.action_warning {
+  background: rgba(245, 158, 11, 0.1);
+  border-left-color: var(--color-amber);
+}
+
+.action_info {
+  background: rgba(59, 130, 246, 0.1);
+  border-left-color: var(--color-blue);
+}
+
+.actionIcon { font-size: 1.5rem; }
+
+.actionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.actionTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.actionDesc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* Alert cards */
+.alertCard {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alertHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.alertTime {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-dim);
+}
+
+.alertBadge {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+}
+
+.alertTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.alertDesc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}

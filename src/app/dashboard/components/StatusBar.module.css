@@ -1,0 +1,106 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  height: 56px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-surface-2);
+  flex-shrink: 0;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+}
+
+.logoBay { color: #fff; }
+.logoWatch { color: var(--color-red); }
+.logoAI {
+  font-size: 0.9rem;
+  color: var(--color-amber);
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-surface-3);
+}
+
+.subtitle {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  color: var(--color-text-muted);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.online {
+  background: var(--color-green);
+  box-shadow: 0 0 8px var(--color-green);
+  animation: pulse-glow 2s infinite;
+}
+
+.offline {
+  background: var(--color-amber);
+  animation: pulse-glow 1s infinite;
+}
+
+.indicatorText {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: var(--color-text-muted);
+}
+
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--color-text);
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--color-text-dim);
+}
+
+.clock {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  letter-spacing: 1px;
+}

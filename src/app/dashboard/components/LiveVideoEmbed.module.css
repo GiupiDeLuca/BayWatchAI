@@ -1,0 +1,47 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.liveBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-weight: bold;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pulse-glow 1s infinite;
+}
+
+.error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}

@@ -1,0 +1,30 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: var(--space-md);
+  gap: var(--space-md);
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--color-surface-2);
+  overflow: hidden;
+}
