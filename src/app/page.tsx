@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import styles from './page.module.css';
 
 export default function SplashPage() {
@@ -19,8 +20,30 @@ export default function SplashPage() {
     <div className={styles.container}>
       <div className={styles.overlay} />
 
+      {/* Mitch — slides in from left */}
+      <div className={styles.characterLeft}>
+        <Image
+          src="/mitch.png"
+          alt="Mitch Buchannon"
+          fill
+          style={{ objectFit: 'contain', objectPosition: 'bottom center' }}
+          priority
+        />
+      </div>
+
+      {/* CJ — slides in from right */}
+      <div className={styles.characterRight}>
+        <Image
+          src="/cj.png"
+          alt="CJ Parker"
+          fill
+          style={{ objectFit: 'contain', objectPosition: 'bottom center' }}
+          priority
+        />
+      </div>
+
       <div className={styles.content}>
-        <div className={styles.badge}>POWERED BY TRIO AI VISION</div>
+        <div className={styles.badge}>POWERED BY <strong>TRIO</strong> AI</div>
         <h1 className={styles.title}>
           <span className={styles.titleBay}>BAY</span>
           <span className={styles.titleWatch}>WATCH</span>
@@ -31,8 +54,6 @@ export default function SplashPage() {
         </p>
         <p className={styles.subtitle}>
           Real-time AI monitoring of the LA to Orange County coastline.
-          <br />
-          Somebody&apos;s gotta watch over this beach. Today, it&apos;s AI.
         </p>
         <button className={styles.enterButton} onClick={handleEnter}>
           ENTER OPERATIONS CENTER
@@ -52,7 +73,7 @@ export default function SplashPage() {
           </div>
         </div>
         <div className={styles.readyLine}>
-          &ldquo;I&apos;m always ready.&rdquo; &mdash; Mitch Buchannon
+          &ldquo;I&apos;m always ready.&rdquo; &mdash; <strong>Mitch Buchannon</strong>
         </div>
       </div>
       <div className={styles.footer}>

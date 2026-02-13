@@ -16,7 +16,6 @@
     #e63946 85%,
     #c1121f 100%
   );
-  animation: fade-in 0.6s ease;
 }
 
 .overlay {
@@ -25,29 +24,99 @@
   background:
     radial-gradient(ellipse at 50% 100%, transparent 40%, rgba(250, 246, 238, 0.3) 100%);
   pointer-events: none;
+  z-index: 0;
 }
+
+/* ===== Characters — BIG, nearly full viewport height ===== */
+
+.characterLeft {
+  position: absolute;
+  left: -19%;
+  bottom: 0;
+  width: 70vw;
+  height: 153vh;
+  z-index: 2;
+  pointer-events: none;
+  animation: slide-in-left 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+.characterRight {
+  position: absolute;
+  right: -13%;
+  bottom: -20px;
+  width: 70vw;
+  height: 153vh;
+  z-index: 2;
+  pointer-events: none;
+  animation: slide-in-right 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-110%);
+    opacity: 0;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ===== Content ===== */
 
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 20px;
-  animation: slide-up 0.8s ease;
+  animation: fade-in-up 0.8s ease 0.1s both;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .badge {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 3px;
-  color: var(--color-red);
-  background: rgba(230, 57, 70, 0.1);
-  border: 1px solid rgba(230, 57, 70, 0.25);
+  color: #39FF14;
+  background: rgba(57, 255, 20, 0.1);
+  border: 1px solid rgba(57, 255, 20, 0.3);
   padding: 6px 16px;
   border-radius: var(--radius-full);
+  margin-bottom: 24px;
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
 }
+
+/* ===== Title with AI stamp overlay ===== */
 
 .title {
   font-family: var(--font-display);
@@ -57,6 +126,7 @@
   display: flex;
   gap: 12px;
   align-items: baseline;
+  position: relative;
 }
 
 .titleBay {
@@ -67,11 +137,63 @@
   color: var(--color-red);
 }
 
+/*
+  AI — huge metallic stamp that overlaps the BAY WATCH title
+  Positioned absolutely on top, tilted, bright polished chrome
+*/
 .titleAI {
-  font-size: 3rem;
-  color: var(--color-sand);
-  vertical-align: super;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font-size: 12rem;
+  line-height: 1;
+  letter-spacing: 8px;
+  background: linear-gradient(
+    160deg,
+    #ffffff 0%,
+    #e0e0e0 15%,
+    #f5f5f5 25%,
+    #c8c8c8 40%,
+    #e8e8e8 50%,
+    #d0d0d0 60%,
+    #f0f0f0 75%,
+    #b8b8b8 90%,
+    #e0e0e0 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter:
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))
+    drop-shadow(0 0 20px rgba(200, 200, 220, 0.5))
+    drop-shadow(0 0 40px rgba(180, 180, 200, 0.3));
+  animation: stamp-ai 0.4s cubic-bezier(0.22, 1, 0.36, 1) 1.3s both;
+  z-index: 4;
+  pointer-events: none;
 }
+
+@keyframes stamp-ai {
+  0% {
+    transform: translate(-50%, -50%) rotate(-12deg) scale(4);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  70% {
+    transform: translate(-50%, -50%) rotate(-12deg) scale(0.95);
+  }
+  85% {
+    transform: translate(-50%, -50%) rotate(-12deg) scale(1.03);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-12deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== Rest of content ===== */
 
 .tagline {
   font-family: var(--font-display);
@@ -99,6 +221,8 @@
   border-radius: var(--radius-md);
   transition: all var(--transition-normal);
   box-shadow: 0 4px 20px rgba(230, 57, 70, 0.35);
+  position: relative;
+  z-index: 5;
 }
 
 .enterButton:hover {
@@ -137,8 +261,8 @@
 }
 
 .readyLine {
-  font-style: italic;
   font-size: 0.8rem;
+  font-weight: 700;
   color: #8b6050;
   margin-top: 4px;
 }
@@ -146,6 +270,7 @@
 .footer {
   position: absolute;
   bottom: 24px;
+  z-index: 5;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.7);
   display: flex;
@@ -161,4 +286,3 @@
 .footerDot {
   opacity: 0.5;
 }
-
