@@ -6,7 +6,7 @@
   overflow: hidden;
 }
 
-/* Top row: 3 zone cards with video + data */
+/* Top row: 3 zone cards with mini-maps + data */
 .zoneRow {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -16,30 +16,25 @@
   flex-shrink: 0;
 }
 
-/* Bottom row: map + feed + actions */
+/* Bottom row: zone cards + actions sidebar */
 .bottomRow {
   display: grid;
-  grid-template-columns: 280px 1fr 340px;
+  grid-template-columns: 1fr 340px;
   flex: 1;
   overflow: hidden;
 }
 
-.mapColumn {
-  border-right: 1px solid var(--color-surface-2);
-  overflow-y: auto;
-}
-
-.feedColumn {
+.zoneCardsColumn {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-right: 1px solid var(--color-surface-2);
 }
 
 .actionsColumn {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  border-left: 1px solid var(--color-surface-2);
 }
 
 /* Loading state */

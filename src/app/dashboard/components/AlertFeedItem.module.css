@@ -97,3 +97,30 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Compact variant */
+.item.compact {
+  padding: var(--space-xs);
+  gap: var(--space-xs);
+  border-radius: var(--radius-sm);
+}
+
+.item.compact .left {
+  min-width: 40px;
+}
+
+.item.compact .time {
+  font-size: 0.5rem;
+}
+
+.item.compact .icon {
+  font-size: 0.75rem;
+}
+
+.item.compact .title {
+  font-size: 0.7rem;
+}
+
+.item.compact .desc {
+  font-size: 0.6rem;
+}

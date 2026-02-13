@@ -10,9 +10,11 @@ interface AlertWithZone extends AlertEntry {
 export function AlertFeedItem({
   alert,
   onZoneClick,
+  compact,
 }: {
   alert: AlertWithZone;
   onZoneClick: () => void;
+  compact?: boolean;
 }) {
   const timeStr = new Date(alert.timestamp).toLocaleTimeString('en-US', {
     hour: '2-digit',
@@ -25,7 +27,7 @@ export function AlertFeedItem({
 
   return (
     <div
-      className={`${styles.item} ${styles[alert.riskLevel]}`}
+      className={`${styles.item} ${styles[alert.riskLevel]} ${compact ? styles.compact : ''}`}
       onClick={onZoneClick}
     >
       <div className={styles.left}>
@@ -33,14 +35,16 @@ export function AlertFeedItem({
         <span className={styles.icon}>{typeIcon}</span>
       </div>
       <div className={styles.body}>
-        <div className={styles.topLine}>
-          <span className={styles.zone}>{alert.zoneName}</span>
-          <RiskBadge level={alert.riskLevel} />
-        </div>
+        {!compact && (
+          <div className={styles.topLine}>
+            <span className={styles.zone}>{alert.zoneName}</span>
+            <RiskBadge level={alert.riskLevel} />
+          </div>
+        )}
         <span className={styles.title}>{alert.title}</span>
-        <span className={styles.desc}>{alert.description.slice(0, 120)}</span>
+        <span className={styles.desc}>{alert.description.slice(0, compact ? 80 : 120)}</span>
       </div>
-      {alert.frameBase64 && (
+      {!compact && alert.frameBase64 && (
         <div className={styles.thumb}>
           <img
             src={`data:image/jpeg;base64,${alert.frameBase64}`}

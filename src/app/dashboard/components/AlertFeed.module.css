@@ -63,3 +63,31 @@
   opacity: 0.6;
   font-family: var(--font-body);
 }
+
+/* Compact variant for zone cards */
+.compact .header {
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.compact .title {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+}
+
+.compact .count {
+  font-size: 0.55rem;
+}
+
+.compact .feed {
+  padding: var(--space-xs);
+  gap: 2px;
+}
+
+.compact .empty {
+  padding: var(--space-sm);
+  font-size: 0.65rem;
+}
+
+.compact .emptyIcon {
+  font-size: 1.2rem;
+}

@@ -24,7 +24,7 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
     id: 'venice',
     name: 'Venice Beach',
     shortName: 'Venice',
-    streamUrl: 'https://www.youtube.com/watch?v=GKfBZC1d2QE',
+    streamUrl: 'https://www.youtube.com/watch?v=RGYlFjV-dtc',
     enabled: true,
     lat: 33.985,
     lng: -118.472,

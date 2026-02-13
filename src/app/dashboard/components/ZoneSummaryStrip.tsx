@@ -1,6 +1,7 @@
 'use client';
 
 import styles from './ZoneSummaryStrip.module.css';
+import { SantaMonicaMap, VeniceMap, ManhattanMap } from './maps/ZoneMapSvgs';
 import type { ZoneState, SuggestedAction } from '@/types';
 
 interface ZoneWithActions extends ZoneState {
@@ -11,13 +12,13 @@ function cToF(c: number): number {
   return c * 9 / 5 + 32;
 }
 
-function extractYouTubeId(url: string): string | null {
-  try {
-    const u = new URL(url);
-    if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
-    if (u.hostname === 'youtu.be') return u.pathname.slice(1);
-  } catch { /* */ }
-  return null;
+function getMapComponent(zoneId: string, riskColor: string) {
+  switch (zoneId) {
+    case 'santa-monica': return <SantaMonicaMap riskColor={riskColor} />;
+    case 'venice': return <VeniceMap riskColor={riskColor} />;
+    case 'manhattan': return <ManhattanMap riskColor={riskColor} />;
+    default: return null;
+  }
 }
 
 export function ZoneSummaryStrip({
@@ -41,8 +42,6 @@ export function ZoneSummaryStrip({
               ? 'var(--color-risk-elevated)'
               : 'var(--color-risk-low)';
 
-        const videoId = zone.config.streamUrl ? extractYouTubeId(zone.config.streamUrl) : null;
-
         return (
           <div
             key={zone.config.id}
@@ -50,20 +49,8 @@ export function ZoneSummaryStrip({
             onClick={() => onSelectZone(zone.config.id)}
           >
             <div className={styles.cardTop}>
-              {/* Small video thumbnail */}
-              <div className={styles.videoThumb}>
-                {zone.streamOnline && videoId ? (
-                  <>
-                    <iframe
-                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1`}
-                      allow="autoplay; encrypted-media"
-                      title={zone.config.shortName}
-                    />
-                    <div className={styles.liveDot} />
-                  </>
-                ) : (
-                  <div className={styles.videoOffline}>CAM OFFLINE</div>
-                )}
+              <div className={styles.mapThumb}>
+                {getMapComponent(zone.config.id, riskColor)}
               </div>
 
               <div className={styles.cardInfo}>
@@ -115,10 +102,6 @@ export function ZoneSummaryStrip({
                 </div>
               </div>
             </div>
-
-            {!zone.streamOnline && (
-              <div className={styles.offlineTag}>CAM OFFLINE</div>
-            )}
           </div>
         );
       })}
