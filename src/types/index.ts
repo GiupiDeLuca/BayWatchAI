@@ -205,6 +205,7 @@ export interface SystemState {
   activeJobCount: number;
   errors: string[];
   trioBudget: TrioBudget;
+  resolvedActionIds: string[];
 }
 
 // ===== Suggested Actions =====
@@ -230,6 +231,7 @@ export interface ZonesApiResponse {
     startedAt: string | null;
     activeJobCount: number;
     trioBudget: TrioBudget;
+    resolvedActionIds: string[];
   };
 }
 

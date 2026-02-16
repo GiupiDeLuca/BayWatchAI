@@ -14,6 +14,7 @@ interface PatrolData {
   };
   alerts: PatrolAlert[];
   actions: SuggestedAction[];
+  resolvedActionIds: string[];
 }
 
 export default function PatrolPage() {
@@ -22,6 +23,7 @@ export default function PatrolPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [data, setData] = useState<PatrolData | null>(null);
   const [notifPermission, setNotifPermission] = useState<NotificationPermission>('default');
+  const [acknowledging, setAcknowledging] = useState<string | null>(null);
   const lastAlertId = useRef<string>('');
 
   // Check localStorage for existing session
@@ -87,6 +89,27 @@ export default function PatrolPage() {
     }
   }, [selectedZone, notifPermission]);
 
+  const acknowledgeAction = async (actionId: string) => {
+    setAcknowledging(actionId);
+    try {
+      const res = await fetch('/api/patrol/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actionId }),
+      });
+      if (!res.ok) {
+        console.error('[patrol] Resolve failed:', res.status);
+        return;
+      }
+      // Re-poll immediately to reflect the change
+      await poll();
+    } catch (e) {
+      console.error('[patrol] Acknowledge error:', e);
+    } finally {
+      setAcknowledging(null);
+    }
+  };
+
   useEffect(() => {
     if (!isLoggedIn || !selectedZone) return;
     poll();
@@ -145,6 +168,11 @@ export default function PatrolPage() {
         ? 'var(--color-risk-elevated)'
         : 'var(--color-risk-low)';
 
+  const resolvedSet = new Set(data?.resolvedActionIds || []);
+  const urgentUnresolved = (data?.actions || []).filter(
+    (a) => a.priority === 'urgent' && !resolvedSet.has(a.id),
+  );
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -177,6 +205,31 @@ export default function PatrolPage() {
         )}
       </header>
 
+      {/* Urgent action banner */}
+      {urgentUnresolved.length > 0 && (
+        <div className={styles.urgentBanner}>
+          <div className={styles.urgentBannerContent}>
+            <span className={styles.urgentBannerIcon}>{urgentUnresolved[0].icon}</span>
+            <div className={styles.urgentBannerText}>
+              <span className={styles.urgentBannerTitle}>
+                {urgentUnresolved[0].title}
+                {urgentUnresolved.length > 1 && (
+                  <span className={styles.urgentBannerCount}>+{urgentUnresolved.length - 1}</span>
+                )}
+              </span>
+              <span className={styles.urgentBannerDesc}>{urgentUnresolved[0].description}</span>
+            </div>
+          </div>
+          <button
+            className={styles.ackBtn}
+            onClick={() => acknowledgeAction(urgentUnresolved[0].id)}
+            disabled={acknowledging === urgentUnresolved[0].id}
+          >
+            {acknowledging === urgentUnresolved[0].id ? 'SENDING...' : 'ACKNOWLEDGE'}
+          </button>
+        </div>
+      )}
+
       {notifPermission !== 'granted' && (
         <button className={styles.notifBtn} onClick={requestNotifications}>
           Enable Push Notifications
@@ -187,18 +240,31 @@ export default function PatrolPage() {
         {data?.actions && data.actions.length > 0 && (
           <div className={styles.actionSection}>
             <span className={styles.sectionTitle}>ACTIVE ADVISORIES</span>
-            {data.actions.map((action) => (
-              <div
-                key={action.id}
-                className={`${styles.actionCard} ${styles[`action_${action.priority}`]}`}
-              >
-                <span className={styles.actionIcon}>{action.icon}</span>
-                <div className={styles.actionBody}>
-                  <span className={styles.actionTitle}>{action.title}</span>
-                  <span className={styles.actionDesc}>{action.description}</span>
+            {data.actions.map((action) => {
+              const isResolved = resolvedSet.has(action.id);
+              return (
+                <div
+                  key={action.id}
+                  className={`${styles.actionCard} ${styles[`action_${action.priority}`]} ${isResolved ? styles.actionResolved : ''}`}
+                >
+                  <span className={styles.actionIcon}>{action.icon}</span>
+                  <div className={styles.actionBody}>
+                    <span className={styles.actionTitle}>{action.title}</span>
+                    <span className={styles.actionDesc}>{action.description}</span>
+                  </div>
+                  {action.priority === 'urgent' && !isResolved && (
+                    <button
+                      className={styles.ackBtnSmall}
+                      onClick={() => acknowledgeAction(action.id)}
+                      disabled={acknowledging === action.id}
+                    >
+                      {acknowledging === action.id ? '...' : 'ACK'}
+                    </button>
+                  )}
+                  {isResolved && <span className={styles.resolvedBadge}>RESOLVED</span>}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

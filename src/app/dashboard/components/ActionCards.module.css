@@ -122,3 +122,31 @@
   color: var(--color-text-muted);
   line-height: 1.4;
 }
+
+/* Red dot next to header when urgent unresolved actions exist */
+.urgentDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--color-red);
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Resolved action card — dimmed with strikethrough */
+.card.resolved {
+  opacity: 0.45;
+  border-left-color: var(--color-text-dim) !important;
+  background: var(--color-surface-2) !important;
+}
+
+.card.resolved .cardTitle {
+  text-decoration: line-through;
+}

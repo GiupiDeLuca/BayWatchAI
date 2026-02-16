@@ -1,6 +1,7 @@
 import { RiskFactors, SuggestedAction, ActionPriority } from '@/types';
 
 interface ActionRule {
+  slug: string; // deterministic ID suffix
   condition: (f: RiskFactors) => boolean;
   priority: ActionPriority;
   title: string;
@@ -16,6 +17,7 @@ interface ActionRule {
 const ACTION_RULES: ActionRule[] = [
   // URGENT
   {
+    slug: 'emergency',
     condition: (f) => f.emergencyVehiclesVisible,
     priority: 'urgent',
     title: 'Emergency Activity Detected',
@@ -25,6 +27,7 @@ const ACTION_RULES: ActionRule[] = [
     triggeredBy: ['emergencyVehiclesVisible'],
   },
   {
+    slug: 'swimmers-dangerous-surf',
     condition: (f) => f.swimmersDetected && f.highWaveHeight,
     priority: 'urgent',
     title: 'Swimmers in Dangerous Surf',
@@ -34,6 +37,7 @@ const ACTION_RULES: ActionRule[] = [
     triggeredBy: ['swimmersDetected', 'highWaveHeight'],
   },
   {
+    slug: 'swimmers-extreme-tide',
     condition: (f) => f.swimmersDetected && f.extremeTide,
     priority: 'urgent',
     title: 'Swimmers in Extreme Tide',
@@ -45,6 +49,7 @@ const ACTION_RULES: ActionRule[] = [
 
   // WARNING
   {
+    slug: 'crowd-wind',
     condition: (f) => f.highCrowdNearWaterline && f.strongWind,
     priority: 'warning',
     title: 'High Crowd + Strong Wind Advisory',
@@ -54,6 +59,7 @@ const ACTION_RULES: ActionRule[] = [
     triggeredBy: ['highCrowdNearWaterline', 'strongWind'],
   },
   {
+    slug: 'crowd-surf',
     condition: (f) => f.highCrowdNearWaterline && f.highWaveHeight,
     priority: 'warning',
     title: 'Crowded Beach + High Surf',
@@ -63,6 +69,7 @@ const ACTION_RULES: ActionRule[] = [
     triggeredBy: ['highCrowdNearWaterline', 'highWaveHeight'],
   },
   {
+    slug: 'swimmers',
     condition: (f) => f.swimmersDetected,
     priority: 'warning',
     title: 'Active Swimmers Detected',
@@ -72,6 +79,7 @@ const ACTION_RULES: ActionRule[] = [
     triggeredBy: ['swimmersDetected'],
   },
   {
+    slug: 'crowd',
     condition: (f) => f.highCrowdNearWaterline,
     priority: 'warning',
     title: 'Crowded Waterline',
@@ -83,6 +91,7 @@ const ACTION_RULES: ActionRule[] = [
 
   // INFO
   {
+    slug: 'high-surf',
     condition: (f) => f.highWaveHeight,
     priority: 'info',
     title: 'High Surf Advisory',
@@ -92,6 +101,7 @@ const ACTION_RULES: ActionRule[] = [
     triggeredBy: ['highWaveHeight'],
   },
   {
+    slug: 'extreme-tide',
     condition: (f) => f.extremeTide,
     priority: 'info',
     title: 'Extreme Tide Conditions',
@@ -101,6 +111,7 @@ const ACTION_RULES: ActionRule[] = [
     triggeredBy: ['extremeTide'],
   },
   {
+    slug: 'strong-wind',
     condition: (f) => f.strongWind,
     priority: 'info',
     title: 'Strong Wind Advisory',
@@ -111,11 +122,10 @@ const ACTION_RULES: ActionRule[] = [
   },
 ];
 
-let actionCounter = 0;
-
 /**
  * Generate suggested actions for a zone based on its current risk factors.
  * Returns matching actions in priority order (urgent → warning → info).
+ * IDs are deterministic: same zone + same factors = same IDs every time.
  */
 export function generateActions(
   zoneId: string,
@@ -126,7 +136,7 @@ export function generateActions(
   for (const rule of ACTION_RULES) {
     if (rule.condition(factors)) {
       actions.push({
-        id: `action-${zoneId}-${++actionCounter}`,
+        id: `action-${rule.slug}-${zoneId}`,
         zoneId,
         priority: rule.priority,
         title: rule.title,

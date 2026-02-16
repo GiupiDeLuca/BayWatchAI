@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './page.module.css';
 import { StatusBar } from './components/StatusBar';
 import { ZoneSummaryStrip } from './components/ZoneSummaryStrip';
 import { ZoneCard } from './components/ZoneCard';
 import { ActionCards } from './components/ActionCards';
+import { UrgentSnackbar } from './components/UrgentSnackbar';
 import type { ZoneState, SuggestedAction, TrioBudget } from '@/types';
 
 interface ZoneWithActions extends ZoneState {
@@ -17,6 +18,7 @@ interface SystemInfo {
   startedAt: string | null;
   activeJobCount: number;
   trioBudget: TrioBudget;
+  resolvedActionIds: string[];
 }
 
 function useZonePolling(intervalMs = 5000) {
@@ -50,9 +52,11 @@ function useZonePolling(intervalMs = 5000) {
 export default function DashboardPage() {
   const { zones, system, error } = useZonePolling(5000);
   const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
 
   // Collect all actions across zones
   const allActions = zones.flatMap((z) => z.actions || []);
+  const resolvedIds = system?.resolvedActionIds || [];
 
   const isLoading = zones.length === 0 && !error;
 
@@ -62,9 +66,19 @@ export default function DashboardPage() {
       .map((a) => ({ ...a, zoneName: zone.config.shortName }))
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
+  const scrollToActions = () => {
+    actionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className={styles.dashboard}>
       <StatusBar system={system} error={error} />
+
+      <UrgentSnackbar
+        actions={allActions}
+        resolvedIds={resolvedIds}
+        onView={scrollToActions}
+      />
 
       {isLoading ? (
         <div className={styles.loading}>
@@ -96,8 +110,8 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            <div className={styles.actionsColumn}>
-              <ActionCards actions={allActions} />
+            <div className={styles.actionsColumn} ref={actionsRef}>
+              <ActionCards actions={allActions} resolvedIds={resolvedIds} />
             </div>
           </div>
         </div>

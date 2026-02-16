@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getZone } from '@/lib/store';
+import { getZone, getResolvedActionIds } from '@/lib/store';
 import { generateActions } from '@/lib/actions';
 import type { PatrolAlert } from '@/types';
 
@@ -64,5 +64,6 @@ export async function GET(request: NextRequest) {
     },
     alerts: patrolAlerts,
     actions,
+    resolvedActionIds: getResolvedActionIds(),
   });
 }

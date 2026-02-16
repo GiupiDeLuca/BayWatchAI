@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getEnabledZoneStates, getState, getTrioBudget } from '@/lib/store';
+import { getEnabledZoneStates, getState, getTrioBudget, getResolvedActionIds } from '@/lib/store';
 import { generateActions } from '@/lib/actions';
 import type { ZonesApiResponse } from '@/types';
 
@@ -9,6 +9,7 @@ export async function GET() {
   const systemState = getState();
   const zones = getEnabledZoneStates();
   const trioBudget = getTrioBudget();
+  const resolvedActionIds = getResolvedActionIds();
 
   // Attach generated actions to each zone for the response
   const zonesWithActions = zones.map((zone) => ({
@@ -23,6 +24,7 @@ export async function GET() {
       startedAt: systemState.startedAt,
       activeJobCount: systemState.activeJobCount,
       trioBudget,
+      resolvedActionIds,
     },
   };
 

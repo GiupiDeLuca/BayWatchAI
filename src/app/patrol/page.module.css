@@ -206,6 +206,123 @@
   margin-left: auto;
 }
 
+/* ===== Urgent Banner ===== */
+.urgentBanner {
+  background: var(--color-red);
+  color: #fff;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  animation: slide-down 0.3s ease;
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.urgentBannerContent {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+.urgentBannerIcon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.urgentBannerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.urgentBannerTitle {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.urgentBannerCount {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  margin-left: 8px;
+}
+
+.urgentBannerDesc {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.ackBtn {
+  width: 100%;
+  padding: 12px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 3px;
+  color: var(--color-red);
+  background: #fff;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  transition: all var(--transition-fast);
+}
+
+.ackBtn:hover:not(:disabled) {
+  background: #faf6ee;
+}
+
+.ackBtn:disabled {
+  opacity: 0.6;
+}
+
+/* Small ACK button on action cards */
+.ackBtnSmall {
+  align-self: center;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  color: #fff;
+  background: var(--color-red);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+}
+
+.ackBtnSmall:disabled {
+  opacity: 0.5;
+}
+
+/* Resolved state for action cards */
+.actionResolved {
+  opacity: 0.5;
+  border-left-color: #b8a898 !important;
+  background: #f5f0ea !important;
+}
+
+.actionResolved .actionTitle {
+  text-decoration: line-through;
+}
+
+.resolvedBadge {
+  align-self: center;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 1px;
+  color: #6b9a5a;
+  background: rgba(107, 154, 90, 0.1);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
 /* Notifications */
 .notifBtn {
   margin: var(--space-sm) var(--space-md);

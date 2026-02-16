@@ -70,6 +70,7 @@ function createInitialState(): SystemState {
       liveMinutesUsed: 0,
       mode: 'conservative' as TrioMode,
     },
+    resolvedActionIds: [],
   };
 }
 
@@ -231,6 +232,18 @@ export function incrementCheckOnceUsed(): void {
 
 export function incrementLiveMinutes(minutes: number): void {
   state.trioBudget.liveMinutesUsed += minutes;
+}
+
+// ===== Action Resolution =====
+
+export function resolveAction(actionId: string): void {
+  if (!state.resolvedActionIds.includes(actionId)) {
+    state.resolvedActionIds.push(actionId);
+  }
+}
+
+export function getResolvedActionIds(): string[] {
+  return state.resolvedActionIds;
 }
 
 /** Reset to initial state (useful for testing and force-restart) */

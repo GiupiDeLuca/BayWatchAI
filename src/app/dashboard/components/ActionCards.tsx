@@ -3,7 +3,15 @@
 import styles from './ActionCards.module.css';
 import type { SuggestedAction } from '@/types';
 
-export function ActionCards({ actions }: { actions: SuggestedAction[] }) {
+export function ActionCards({
+  actions,
+  resolvedIds = [],
+}: {
+  actions: SuggestedAction[];
+  resolvedIds?: string[];
+}) {
+  const resolvedSet = new Set(resolvedIds);
+
   // Deduplicate by title (same action from multiple zones)
   const seen = new Set<string>();
   const unique = actions.filter((a) => {
@@ -17,6 +25,11 @@ export function ActionCards({ actions }: { actions: SuggestedAction[] }) {
     const order = { urgent: 0, warning: 1, info: 2 };
     return order[a.priority] - order[b.priority];
   });
+
+  // Count unresolved urgent actions
+  const unresolvedUrgent = sorted.filter(
+    (a) => a.priority === 'urgent' && !resolvedSet.has(a.id),
+  ).length;
 
   if (sorted.length === 0) {
     return (
@@ -36,14 +49,17 @@ export function ActionCards({ actions }: { actions: SuggestedAction[] }) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <span className={styles.title}>RECOMMENDED ACTIONS</span>
+        <span className={styles.title}>
+          RECOMMENDED ACTIONS
+          {unresolvedUrgent > 0 && <span className={styles.urgentDot} />}
+        </span>
         <span className={styles.count}>{sorted.length}</span>
       </div>
       <div className={styles.cards}>
         {sorted.slice(0, 5).map((action) => (
           <div
             key={action.id}
-            className={`${styles.card} ${styles[action.priority]}`}
+            className={`${styles.card} ${styles[action.priority]} ${resolvedSet.has(action.id) ? styles.resolved : ''}`}
           >
             <div className={styles.cardLeft}>
               <span className={styles.cardIcon}>{action.icon}</span>
