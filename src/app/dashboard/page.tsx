@@ -6,7 +6,7 @@ import { StatusBar } from './components/StatusBar';
 import { ZoneSummaryStrip } from './components/ZoneSummaryStrip';
 import { ZoneCard } from './components/ZoneCard';
 import { ActionCards } from './components/ActionCards';
-import type { ZoneState, SuggestedAction } from '@/types';
+import type { ZoneState, SuggestedAction, TrioBudget } from '@/types';
 
 interface ZoneWithActions extends ZoneState {
   actions: SuggestedAction[];
@@ -16,6 +16,7 @@ interface SystemInfo {
   initialized: boolean;
   startedAt: string | null;
   activeJobCount: number;
+  trioBudget: TrioBudget;
 }
 
 function useZonePolling(intervalMs = 5000) {
@@ -72,7 +73,7 @@ export default function DashboardPage() {
           <span className={styles.loadingQuote}>&ldquo;Mitch, the ocean doesn&apos;t care how ready you think you are.&rdquo;</span>
         </div>
       ) : (
-        <>
+        <div className={styles.content}>
           {/* Top row: 3 zone cards with mini-maps + environmental data */}
           <div className={styles.zoneRow}>
             <ZoneSummaryStrip
@@ -99,7 +100,7 @@ export default function DashboardPage() {
               <ActionCards actions={allActions} />
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

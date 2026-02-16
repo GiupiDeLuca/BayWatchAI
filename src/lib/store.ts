@@ -7,6 +7,8 @@ import {
   RiskLevel,
   EnvironmentalData,
   AlertEntry,
+  TrioMode,
+  TrioBudget,
 } from '@/types';
 import { ZONE_CONFIGS, getEnabledZones } from './zone-config';
 
@@ -63,6 +65,11 @@ function createInitialState(): SystemState {
     zones,
     activeJobCount: 0,
     errors: [],
+    trioBudget: {
+      checkOnceUsed: 0,
+      liveMinutesUsed: 0,
+      mode: 'conservative' as TrioMode,
+    },
   };
 }
 
@@ -206,6 +213,24 @@ export function findZoneByJobId(jobId: string): string | null {
     }
   }
   return null;
+}
+
+// ===== Trio Budget Accessors =====
+
+export function getTrioBudget(): TrioBudget {
+  return state.trioBudget;
+}
+
+export function setTrioMode(mode: TrioMode): void {
+  state.trioBudget.mode = mode;
+}
+
+export function incrementCheckOnceUsed(): void {
+  state.trioBudget.checkOnceUsed++;
+}
+
+export function incrementLiveMinutes(minutes: number): void {
+  state.trioBudget.liveMinutesUsed += minutes;
 }
 
 /** Reset to initial state (useful for testing and force-restart) */

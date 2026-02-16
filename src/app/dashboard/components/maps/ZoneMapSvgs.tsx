@@ -64,7 +64,7 @@ function Block({ x, y, w, h, fill }: { x: number; y: number; w: number; h: numbe
 
 export function SantaMonicaMap({ riskColor, className }: { riskColor: string; className?: string }) {
   return (
-    <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" className={className} style={{ width: '100%', height: '100%', display: 'block' }}>
+    <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" className={className} preserveAspectRatio="xMidYMid slice" style={{ width: '100%', height: '100%', display: 'block' }}>
       <defs>
         <linearGradient id="sm-ocean" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#a8d8ea" />
@@ -186,7 +186,7 @@ export function SantaMonicaMap({ riskColor, className }: { riskColor: string; cl
 
 export function VeniceMap({ riskColor, className }: { riskColor: string; className?: string }) {
   return (
-    <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" className={className} style={{ width: '100%', height: '100%', display: 'block' }}>
+    <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" className={className} preserveAspectRatio="xMidYMid slice" style={{ width: '100%', height: '100%', display: 'block' }}>
       <defs>
         <linearGradient id="vn-ocean" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#a8d8ea" />
@@ -313,7 +313,7 @@ export function VeniceMap({ riskColor, className }: { riskColor: string; classNa
 
 export function ManhattanMap({ riskColor, className }: { riskColor: string; className?: string }) {
   return (
-    <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" className={className} style={{ width: '100%', height: '100%', display: 'block' }}>
+    <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" className={className} preserveAspectRatio="xMidYMid slice" style={{ width: '100%', height: '100%', display: 'block' }}>
       <defs>
         <linearGradient id="mb-ocean" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#a8d8ea" />

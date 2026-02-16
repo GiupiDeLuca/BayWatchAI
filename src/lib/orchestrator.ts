@@ -1,4 +1,4 @@
-import { TrioWebhookPayload } from '@/types';
+import { TrioWebhookPayload, TrioMode } from '@/types';
 import {
   markInitialized,
   findZoneByJobId,
@@ -15,6 +15,10 @@ import {
   setDigestNarrative,
   updateZoneRisk,
   resetState,
+  getTrioBudget,
+  setTrioMode,
+  incrementCheckOnceUsed,
+  incrementLiveMinutes,
 } from './store';
 import { updateAndComputeRisk, deriveEnvironmentalFactors } from './risk-engine';
 import { fetchAllEnvironmental } from './noaa-client';
@@ -25,9 +29,9 @@ import { TRIO_CONDITIONS, getEnabledZones } from './zone-config';
 interface OrchestratorGlobals {
   __bw_checkOnce?: ReturnType<typeof setInterval> | null;
   __bw_noaa?: ReturnType<typeof setInterval> | null;
-  __bw_digest?: ReturnType<typeof setInterval> | null;
-  __bw_digestIdx?: number;
   __bw_running?: boolean;
+  __bw_zoneIdx?: number;
+  __bw_condIdx?: number;
 }
 const g = globalThis as unknown as OrchestratorGlobals;
 
@@ -35,21 +39,34 @@ function getCheckOnceInterval() { return g.__bw_checkOnce ?? null; }
 function setCheckOnceInterval(v: ReturnType<typeof setInterval> | null) { g.__bw_checkOnce = v; }
 function getNoaaInterval() { return g.__bw_noaa ?? null; }
 function setNoaaInterval(v: ReturnType<typeof setInterval> | null) { g.__bw_noaa = v; }
-function getDigestInterval() { return g.__bw_digest ?? null; }
-function setDigestInterval(v: ReturnType<typeof setInterval> | null) { g.__bw_digest = v; }
-function getDigestIndex() { return g.__bw_digestIdx ?? 0; }
-function setDigestIndex(v: number) { g.__bw_digestIdx = v; }
 function getIsRunning() { return g.__bw_running ?? false; }
 function setIsRunning(v: boolean) { g.__bw_running = v; }
+function getZoneIndex() { return g.__bw_zoneIdx ?? 0; }
+function setZoneIndex(v: number) { g.__bw_zoneIdx = v; }
+function getConditionIndex() { return g.__bw_condIdx ?? 0; }
+function setConditionIndex(v: number) { g.__bw_condIdx = v; }
 
 // ===== Constants =====
-const CHECK_ONCE_INTERVAL_MS = 60_000;    // 60 seconds (conservative to avoid rate limits)
 const NOAA_INTERVAL_MS = 5 * 60_000;      // 5 minutes
-const DIGEST_ROTATION_MS = 3 * 60_000;    // 3 minutes
-const JOB_RESTART_DELAY_MS = 3_000;       // 3 seconds before restarting a stopped job
+const JOB_RESTART_DELAY_MS = 3_000;
+
+// Mode-specific timing
+const DEMO_CHECK_INTERVAL_MS = 30_000;     // 30 seconds
+const CONSERVATIVE_CHECK_INTERVAL_MS = 60_000; // 60 seconds
+
+// Budget limits
+const CHECK_ONCE_DAILY_LIMIT = 50;
+const LIVE_MINUTES_DAILY_LIMIT = 30;
+
+// Conditions to rotate through (PRIMARY and SWIMMERS alternate, EMERGENCY on-demand)
+const CONDITION_ROTATION: { key: 'highCrowdNearWaterline' | 'swimmersDetected'; condition: string }[] = [
+  { key: 'highCrowdNearWaterline', condition: TRIO_CONDITIONS.PRIMARY },
+  { key: 'swimmersDetected', condition: TRIO_CONDITIONS.SWIMMERS },
+];
 
 /**
- * Start all monitoring: live-monitor jobs, check-once polling, NOAA fetching, digest rotation.
+ * Start all monitoring: check-once polling + NOAA fetching.
+ * Live-monitor and live-digest are on-demand only (not auto-started).
  */
 export async function startAll(): Promise<{ jobsCreated: number; message: string }> {
   if (getIsRunning()) {
@@ -64,70 +81,44 @@ export async function startAll(): Promise<{ jobsCreated: number; message: string
     return { jobsCreated: 0, message: 'No enabled zones' };
   }
 
-  let jobsCreated = 0;
-  const webhookUrl = `${process.env.NGROK_URL}/api/webhooks/trio`;
-
   console.log(`[orchestrator] Starting monitoring for ${enabledZones.length} zones`);
-  console.log(`[orchestrator] Webhook URL: ${webhookUrl}`);
 
-  // 1. Mark streams with URLs as online (skip validation — Trio has no validate endpoint)
+  // Mark streams with URLs as online
   for (const zone of enabledZones) {
     if (!zone.streamUrl) {
-      console.warn(`[orchestrator] Zone ${zone.id}: no stream URL, skipping`);
       setStreamOnline(zone.id, false);
       continue;
     }
     setStreamOnline(zone.id, true);
-    console.log(`[orchestrator] Zone ${zone.id}: stream URL configured, marking online`);
+    console.log(`[orchestrator] Zone ${zone.id}: stream online`);
   }
 
-  // 2. Start ONE live-monitor job (Trio allows 1 concurrent job)
-  //    We rotate across zones using a timer. Start with the first online zone.
-  const onlineZones = enabledZones.filter((z) => z.streamUrl);
-  if (onlineZones.length > 0) {
-    const firstZone = onlineZones[0];
-    try {
-      const result = await trio.startLiveMonitor(
-        firstZone.streamUrl,
-        TRIO_CONDITIONS.PRIMARY,
-        webhookUrl,
-      );
-      setJobId(firstZone.id, 'liveMonitor', result.job_id);
-      jobsCreated++;
-      setDigestIndex(0); // track which zone has the active monitor
-      console.log(`[orchestrator] Zone ${firstZone.id}: live-monitor started (job ${result.job_id})`);
-    } catch (e) {
-      console.error(`[orchestrator] Zone ${firstZone.id}: live-monitor failed`, e);
-      addError(`Zone ${firstZone.id}: failed to start live-monitor`);
-    }
-  }
-
-  // 4. Initial NOAA fetch (independent of Trio, no rate limit concerns)
+  // Initial NOAA fetch
   fetchNoaaForAllZones().catch((e) =>
     console.error('[orchestrator] Initial NOAA fetch failed:', e),
   );
 
-  // 5. Start check-once polling timer (cycles through zones + conditions)
+  // Start check-once polling in conservative mode (default)
+  const budget = getTrioBudget();
+  const intervalMs = budget.mode === 'demo' ? DEMO_CHECK_INTERVAL_MS : CONSERVATIVE_CHECK_INTERVAL_MS;
+
   setCheckOnceInterval(setInterval(() => {
     runCheckOnceCycle().catch((e) =>
       console.error('[orchestrator] check-once cycle error:', e),
     );
-  }, CHECK_ONCE_INTERVAL_MS));
+  }, intervalMs));
 
-  // 6. Start NOAA polling timer
+  // Start NOAA polling timer
   setNoaaInterval(setInterval(() => {
     fetchNoaaForAllZones().catch((e) =>
       console.error('[orchestrator] NOAA fetch error:', e),
     );
   }, NOAA_INTERVAL_MS));
 
-  // 7. No separate digest — use check-once for all zones since we only have 1 job slot.
-  //    The live-monitor auto-restarts via webhook when it stops after 10 min.
+  setActiveJobCount(0);
+  console.log(`[orchestrator] System started in ${budget.mode} mode. Check-once every ${intervalMs / 1000}s.`);
 
-  setActiveJobCount(jobsCreated);
-  console.log(`[orchestrator] System started. ${jobsCreated} jobs, ${onlineZones.length} zones monitored via check-once polling.`);
-
-  return { jobsCreated, message: `Monitoring ${enabledZones.length} zones` };
+  return { jobsCreated: 0, message: `Monitoring ${enabledZones.length} zones (${budget.mode} mode)` };
 }
 
 /**
@@ -136,13 +127,10 @@ export async function startAll(): Promise<{ jobsCreated: number; message: string
 export async function stopAll(): Promise<void> {
   const ci = getCheckOnceInterval();
   const ni = getNoaaInterval();
-  const di = getDigestInterval();
   if (ci) clearInterval(ci);
   if (ni) clearInterval(ni);
-  if (di) clearInterval(di);
   setCheckOnceInterval(null);
   setNoaaInterval(null);
-  setDigestInterval(null);
   setIsRunning(false);
 
   // Cancel all running Trio jobs
@@ -153,112 +141,228 @@ export async function stopAll(): Promise<void> {
     console.error('[orchestrator] Error cancelling jobs:', e);
   }
 
-  // Reset in-memory state for clean restart
   resetState();
 }
 
-// ===== Live Monitor Restart =====
+// ===== Mode Switching =====
 
-async function restartLiveMonitor(zoneId: string, attempt = 1): Promise<void> {
-  const MAX_RETRIES = 3;
+/**
+ * Switch to demo mode: faster check-once interval, all zones every cycle.
+ */
+export function startDemoMode(): { success: boolean; message: string } {
+  setTrioMode('demo');
+
+  // Restart the check-once timer with demo interval
+  const ci = getCheckOnceInterval();
+  if (ci) clearInterval(ci);
+
+  setCheckOnceInterval(setInterval(() => {
+    runCheckOnceCycle().catch((e) =>
+      console.error('[orchestrator] check-once cycle error:', e),
+    );
+  }, DEMO_CHECK_INTERVAL_MS));
+
+  console.log('[orchestrator] Switched to DEMO mode (30s interval, all zones)');
+  return { success: true, message: 'Demo mode activated — check-once every 30s on all zones' };
+}
+
+/**
+ * Switch back to conservative mode.
+ */
+export function stopDemoMode(): { success: boolean; message: string } {
+  setTrioMode('conservative');
+
+  const ci = getCheckOnceInterval();
+  if (ci) clearInterval(ci);
+
+  setCheckOnceInterval(setInterval(() => {
+    runCheckOnceCycle().catch((e) =>
+      console.error('[orchestrator] check-once cycle error:', e),
+    );
+  }, CONSERVATIVE_CHECK_INTERVAL_MS));
+
+  console.log('[orchestrator] Switched to CONSERVATIVE mode (60s interval, rotating zones)');
+  return { success: true, message: 'Conservative mode activated — check-once every 60s, rotating' };
+}
+
+// ===== Manual Trio Triggers =====
+
+/**
+ * Manually trigger a live-monitor job on a specific zone.
+ * Uses the 1 concurrent job slot. Auto-stops after ~5 minutes.
+ */
+export async function triggerLiveMonitor(zoneId: string): Promise<{ success: boolean; message: string; jobId?: string }> {
   const zone = getZone(zoneId);
-  if (!zone || !zone.config.streamUrl || !zone.streamOnline) return;
+  if (!zone || !zone.config.streamUrl) {
+    return { success: false, message: `Zone ${zoneId} not found or no stream URL` };
+  }
+
+  const budget = getTrioBudget();
+  if (budget.liveMinutesUsed >= LIVE_MINUTES_DAILY_LIMIT) {
+    return { success: false, message: 'Live minutes budget exhausted (30/30)' };
+  }
 
   const webhookUrl = `${process.env.NGROK_URL}/api/webhooks/trio`;
 
-  // Exponential backoff: 3s, 6s, 12s
-  const delay = JOB_RESTART_DELAY_MS * Math.pow(2, attempt - 1);
-  await new Promise((resolve) => setTimeout(resolve, delay));
-
   try {
+    // Cancel any existing live jobs first
+    await trio.cancelAllJobs();
+
     const result = await trio.startLiveMonitor(
       zone.config.streamUrl,
       TRIO_CONDITIONS.PRIMARY,
       webhookUrl,
     );
     setJobId(zoneId, 'liveMonitor', result.job_id);
-    console.log(`[orchestrator] Zone ${zoneId}: live-monitor restarted (job ${result.job_id}, attempt ${attempt})`);
+    setActiveJobCount(1);
+    incrementLiveMinutes(5); // Budget 5 min per trigger
+
+    console.log(`[orchestrator] Live-monitor started on ${zoneId} (job ${result.job_id})`);
+    return { success: true, message: `Live-monitor started on ${zone.config.shortName}`, jobId: result.job_id };
   } catch (e) {
-    console.error(`[orchestrator] Zone ${zoneId}: restart failed (attempt ${attempt})`, e);
-    if (attempt < MAX_RETRIES) {
-      console.log(`[orchestrator] Zone ${zoneId}: retrying in ${delay * 2}ms...`);
-      restartLiveMonitor(zoneId, attempt + 1).catch(() => {});
-    } else {
-      addError(`Zone ${zoneId}: live-monitor restart failed after ${MAX_RETRIES} attempts`);
-    }
+    const msg = e instanceof Error ? e.message : String(e);
+    addError(`Live-monitor trigger failed for ${zoneId}: ${msg}`);
+    return { success: false, message: `Failed: ${msg}` };
+  }
+}
+
+/**
+ * Manually trigger a live-digest job on a specific zone.
+ * Uses the 1 concurrent job slot. Runs for 2 minutes.
+ */
+export async function triggerLiveDigest(zoneId: string): Promise<{ success: boolean; message: string }> {
+  const zone = getZone(zoneId);
+  if (!zone || !zone.config.streamUrl) {
+    return { success: false, message: `Zone ${zoneId} not found or no stream URL` };
+  }
+
+  const budget = getTrioBudget();
+  if (budget.liveMinutesUsed >= LIVE_MINUTES_DAILY_LIMIT) {
+    return { success: false, message: 'Live minutes budget exhausted (30/30)' };
+  }
+
+  try {
+    // Cancel any existing live jobs first
+    await trio.cancelAllJobs();
+
+    const response = await trio.startLiveDigest(zone.config.streamUrl, {
+      window_minutes: 2,
+      capture_interval_seconds: 30,
+    });
+    incrementLiveMinutes(2);
+
+    // Consume SSE stream in background
+    consumeDigestStream(zoneId, response).catch((e) =>
+      console.error(`[orchestrator] Digest stream error for ${zoneId}:`, e),
+    );
+
+    console.log(`[orchestrator] Live-digest started on ${zoneId}`);
+    return { success: true, message: `Live-digest started on ${zone.config.shortName} (2 min window)` };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    addError(`Live-digest trigger failed for ${zoneId}: ${msg}`);
+    return { success: false, message: `Failed: ${msg}` };
   }
 }
 
 // ===== Check-Once Polling =====
 
 async function runCheckOnceCycle(): Promise<void> {
+  const budget = getTrioBudget();
+
+  // Budget check (conservative mode only)
+  if (budget.mode === 'conservative' && budget.checkOnceUsed >= CHECK_ONCE_DAILY_LIMIT - 5) {
+    console.log('[orchestrator] Check-once budget nearly exhausted, skipping cycle');
+    return;
+  }
+
   const zones = getEnabledZoneStates().filter((z) => z.streamOnline && z.config.streamUrl);
+  if (zones.length === 0) return;
 
-  for (const zone of zones) {
-    // All zones get supplementary condition checks.
-    // Zones WITHOUT a live-monitor also get the primary crowd condition via check-once.
-    const conditions: { key: 'swimmersDetected' | 'emergencyVehiclesVisible' | 'highCrowdNearWaterline'; condition: string }[] = [
-      { key: 'swimmersDetected', condition: TRIO_CONDITIONS.SWIMMERS },
-      { key: 'emergencyVehiclesVisible', condition: TRIO_CONDITIONS.EMERGENCY },
-    ];
+  // Pick condition for this cycle (rotate PRIMARY ↔ SWIMMERS)
+  const condIdx = getConditionIndex();
+  const { key, condition } = CONDITION_ROTATION[condIdx % CONDITION_ROTATION.length];
+  setConditionIndex(condIdx + 1);
 
-    // If this zone doesn't have an active live-monitor, also check the primary condition
-    if (!zone.liveMonitorJobId) {
-      conditions.unshift({ key: 'highCrowdNearWaterline', condition: TRIO_CONDITIONS.PRIMARY });
+  if (budget.mode === 'demo') {
+    // DEMO: hit ALL zones with the selected condition
+    for (const zone of zones) {
+      if (budget.checkOnceUsed >= CHECK_ONCE_DAILY_LIMIT) break;
+      await runSingleCheckOnce(zone.config.id, zone.config.streamUrl, key, condition);
+      // Small delay between calls to avoid rate limit
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+  } else {
+    // CONSERVATIVE: hit 1 zone (rotating)
+    const zoneIdx = getZoneIndex();
+    const zone = zones[zoneIdx % zones.length];
+    setZoneIndex(zoneIdx + 1);
+    await runSingleCheckOnce(zone.config.id, zone.config.streamUrl, key, condition);
+  }
+}
+
+async function runSingleCheckOnce(
+  zoneId: string,
+  streamUrl: string,
+  factorKey: 'highCrowdNearWaterline' | 'swimmersDetected',
+  condition: string,
+): Promise<void> {
+  const zone = getZone(zoneId);
+  if (!zone) return;
+
+  try {
+    const result = await trio.checkOnce(streamUrl, condition);
+    incrementCheckOnceUsed();
+
+    const previousValue = zone.risk.factors[factorKey];
+    updateRiskFactor(zoneId, factorKey, result.triggered);
+    setLastTrioCheck(zoneId);
+
+    // Generate alert title based on factor
+    const alertTitle = factorKey === 'swimmersDetected' ? 'Swimmers Detected' :
+                       factorKey === 'highCrowdNearWaterline' ? 'Crowded Waterline' :
+                       'Emergency Activity';
+
+    // If state changed to triggered, add an alert
+    if (result.triggered && !previousValue) {
+      addAlert(zoneId, {
+        id: `co-${zoneId}-${factorKey}-${Date.now()}`,
+        zoneId,
+        timestamp: new Date().toISOString(),
+        type: 'trio_trigger',
+        title: alertTitle,
+        description: result.explanation,
+        riskLevel: zone.risk.level,
+      });
     }
 
-    for (const { key, condition } of conditions) {
-      try {
-        const result = await trio.checkOnce(zone.config.streamUrl, condition);
-        const previousValue = zone.risk.factors[key];
+    // Recompute risk
+    const updatedZone = getZone(zoneId);
+    if (updatedZone) {
+      const newRisk = updateAndComputeRisk(
+        updatedZone.risk.factors,
+        {},
+        updatedZone.risk.total,
+      );
+      updateZoneRisk(zoneId, newRisk);
 
-        updateRiskFactor(zone.config.id, key, result.triggered);
-        setLastTrioCheck(zone.config.id);
-
-        // If state changed, add an alert
-        if (result.triggered && !previousValue) {
-          const alertId = `co-${zone.config.id}-${key}-${Date.now()}`;
-          addAlert(zone.config.id, {
-            id: alertId,
-            zoneId: zone.config.id,
-            timestamp: new Date().toISOString(),
-            type: 'trio_trigger',
-            title: key === 'swimmersDetected' ? 'Swimmers Detected' : 'Emergency Activity',
-            description: result.explanation,
-            riskLevel: zone.risk.level,
-          });
-        }
-
-        // Recompute risk
-        const updatedZone = getZone(zone.config.id);
-        if (updatedZone) {
-          const newRisk = updateAndComputeRisk(
-            updatedZone.risk.factors,
-            {},
-            updatedZone.risk.total,
-          );
-          updateZoneRisk(zone.config.id, newRisk);
-
-          // If risk level changed, add alert
-          if (newRisk.level !== zone.risk.level) {
-            addAlert(zone.config.id, {
-              id: `risk-${zone.config.id}-${Date.now()}`,
-              zoneId: zone.config.id,
-              timestamp: new Date().toISOString(),
-              type: 'risk_change',
-              title: `Risk Level: ${newRisk.level.toUpperCase()}`,
-              description: `Risk score changed from ${zone.risk.total} to ${newRisk.total}`,
-              riskLevel: newRisk.level,
-            });
-          }
-        }
-
-        // Delay between API calls to avoid rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-      } catch (e) {
-        console.error(`[orchestrator] check-once ${key} for ${zone.config.id}:`, e);
+      if (newRisk.level !== zone.risk.level) {
+        addAlert(zoneId, {
+          id: `risk-${zoneId}-${Date.now()}`,
+          zoneId,
+          timestamp: new Date().toISOString(),
+          type: 'risk_change',
+          title: `Risk Level: ${newRisk.level.toUpperCase()}`,
+          description: `Risk score changed from ${zone.risk.total} to ${newRisk.total}`,
+          riskLevel: newRisk.level,
+        });
       }
     }
+
+    const budget = getTrioBudget();
+    console.log(`[orchestrator] check-once ${factorKey} on ${zoneId}: triggered=${result.triggered} [${budget.checkOnceUsed}/${CHECK_ONCE_DAILY_LIMIT} calls used]`);
+  } catch (e) {
+    console.error(`[orchestrator] check-once ${factorKey} for ${zoneId}:`, e);
   }
 }
 
@@ -272,7 +376,6 @@ async function fetchNoaaForAllZones(): Promise<void> {
       const envData = await fetchAllEnvironmental(zone.config);
       updateZoneEnvironmental(zone.config.id, envData);
 
-      // Derive environmental risk factors and recompute risk
       const envFactors = deriveEnvironmentalFactors(envData);
       const currentZone = getZone(zone.config.id);
       if (currentZone) {
@@ -292,46 +395,7 @@ async function fetchNoaaForAllZones(): Promise<void> {
   console.log('[orchestrator] NOAA data refreshed for all zones');
 }
 
-// ===== Live Digest Rotation =====
-
-async function rotateDigest(): Promise<void> {
-  const zones = getEnabledZoneStates().filter((z) => z.streamOnline && z.config.streamUrl);
-  if (zones.length === 0) return;
-
-  // Cancel current digest job if running
-  for (const zone of zones) {
-    if (zone.liveDigestJobId) {
-      try {
-        await trio.cancelJob(zone.liveDigestJobId);
-      } catch {
-        // Job may already be stopped
-      }
-      setJobId(zone.config.id, 'liveDigest', null);
-    }
-  }
-
-  // Advance to next zone
-  const nextIdx = (getDigestIndex() + 1) % zones.length;
-  setDigestIndex(nextIdx);
-  const targetZone = zones[nextIdx];
-
-  try {
-    const response = await trio.startLiveDigest(targetZone.config.streamUrl, {
-      window_minutes: 3,
-      capture_interval_seconds: 30,
-    });
-
-    // Consume SSE stream in background
-    consumeDigestStream(targetZone.config.id, response).catch((e) =>
-      console.error(`[orchestrator] Digest stream error for ${targetZone.config.id}:`, e),
-    );
-
-    console.log(`[orchestrator] Digest rotated to zone: ${targetZone.config.id}`);
-  } catch (e) {
-    console.error(`[orchestrator] Failed to start digest for ${targetZone.config.id}:`, e);
-    addError(`Digest start failed for ${targetZone.config.id}`);
-  }
-}
+// ===== Live Digest Stream Consumer =====
 
 async function consumeDigestStream(zoneId: string, response: Response): Promise<void> {
   if (!response.body) return;
@@ -354,7 +418,6 @@ async function consumeDigestStream(zoneId: string, response: Response): Promise<
               narrative = data.summary || data.narrative;
               setDigestNarrative(zoneId, narrative);
 
-              // Add digest alert
               addAlert(zoneId, {
                 id: `digest-${zoneId}-${Date.now()}`,
                 zoneId,
@@ -383,7 +446,6 @@ async function consumeDigestStream(zoneId: string, response: Response): Promise<
 
 /**
  * Handle incoming Trio webhook events.
- * Called by the /api/webhooks/trio route.
  */
 export async function handleTrioWebhook(payload: TrioWebhookPayload): Promise<void> {
   const eventType = payload.type || payload.event || 'unknown';
@@ -391,7 +453,6 @@ export async function handleTrioWebhook(payload: TrioWebhookPayload): Promise<vo
 
   console.log(`[orchestrator] Webhook: ${eventType} for job ${jobId}`);
 
-  // Find which zone this job belongs to
   const zoneId = findZoneByJobId(jobId);
 
   switch (eventType) {
@@ -406,10 +467,8 @@ export async function handleTrioWebhook(payload: TrioWebhookPayload): Promise<vo
       const explanation = payload.data?.explanation || '';
       const frameB64 = payload.data?.frame_b64;
 
-      // Update the primary condition factor
       updateRiskFactor(zoneId, 'highCrowdNearWaterline', triggered);
 
-      // Add alert if triggered
       if (triggered) {
         addAlert(zoneId, {
           id: `wh-${zoneId}-${Date.now()}`,
@@ -423,7 +482,6 @@ export async function handleTrioWebhook(payload: TrioWebhookPayload): Promise<vo
         });
       }
 
-      // Recompute risk
       const zone = getZone(zoneId);
       if (zone) {
         const newRisk = updateAndComputeRisk(zone.risk.factors, {}, zone.risk.total);
@@ -434,11 +492,11 @@ export async function handleTrioWebhook(payload: TrioWebhookPayload): Promise<vo
 
     case 'job_status':
     case 'job_stopped': {
-      if (payload.auto_stopped && zoneId) {
-        console.log(`[orchestrator] Job ${jobId} auto-stopped for zone ${zoneId}, restarting...`);
-        restartLiveMonitor(zoneId).catch((e) =>
-          console.error(`[orchestrator] Restart failed for ${zoneId}:`, e),
-        );
+      // Do NOT auto-restart — live-monitor is on-demand only now
+      if (zoneId) {
+        console.log(`[orchestrator] Job ${jobId} stopped for zone ${zoneId} (no auto-restart)`);
+        setJobId(zoneId, 'liveMonitor', null);
+        setJobId(zoneId, 'liveDigest', null);
       }
       break;
     }

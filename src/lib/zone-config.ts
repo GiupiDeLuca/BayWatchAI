@@ -102,12 +102,9 @@ export function getZoneConfig(zoneId: string): ZoneConfig | undefined {
   return ZONE_CONFIGS.find((z) => z.id === zoneId);
 }
 
-/** Trio conditions used across the system */
+/** Trio conditions — all sensitive for maximum detection */
 export const TRIO_CONDITIONS = {
-  /** Primary condition — used with live-monitor (1 job per zone) */
-  PRIMARY: 'Are there many people near the waterline? Look for groups of people standing or walking close to where the waves meet the sand.',
-
-  /** Supplementary conditions — polled via check-once */
-  SWIMMERS: 'Are there people swimming in the ocean? Look for people in the water past the wave break.',
-  EMERGENCY: 'Are there emergency vehicles or personnel visible? Look for lifeguard trucks, ambulances, police cars, or people in uniform.',
+  PRIMARY: 'Are there any people visible on the beach or near the water? Even a single person counts.',
+  SWIMMERS: 'Is anyone in or near the ocean water? Look for any person wading, swimming, or standing in the surf.',
+  EMERGENCY: 'Are there any emergency vehicles, lifeguard trucks, or personnel in uniform visible?',
 } as const;

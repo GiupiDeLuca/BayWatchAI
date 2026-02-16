@@ -42,7 +42,7 @@ export function AlertFeedItem({
           </div>
         )}
         <span className={styles.title}>{alert.title}</span>
-        <span className={styles.desc}>{alert.description.slice(0, compact ? 80 : 120)}</span>
+        <span className={styles.desc}>{alert.description}</span>
       </div>
       {!compact && alert.frameBase64 && (
         <div className={styles.thumb}>

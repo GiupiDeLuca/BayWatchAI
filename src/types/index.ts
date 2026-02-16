@@ -190,12 +190,21 @@ export interface ZoneState {
   alerts: AlertEntry[];
 }
 
+export type TrioMode = 'demo' | 'conservative';
+
+export interface TrioBudget {
+  checkOnceUsed: number;
+  liveMinutesUsed: number;
+  mode: TrioMode;
+}
+
 export interface SystemState {
   initialized: boolean;
   startedAt: string | null;
   zones: Record<string, ZoneState>;
   activeJobCount: number;
   errors: string[];
+  trioBudget: TrioBudget;
 }
 
 // ===== Suggested Actions =====
@@ -220,6 +229,7 @@ export interface ZonesApiResponse {
     initialized: boolean;
     startedAt: string | null;
     activeJobCount: number;
+    trioBudget: TrioBudget;
   };
 }
 

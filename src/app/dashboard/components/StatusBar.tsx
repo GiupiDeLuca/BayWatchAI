@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import styles from './StatusBar.module.css';
+import type { TrioBudget } from '@/types';
 
 interface SystemInfo {
   initialized: boolean;
   startedAt: string | null;
   activeJobCount: number;
+  trioBudget: TrioBudget;
 }
 
 export function StatusBar({
@@ -17,6 +19,7 @@ export function StatusBar({
   error: string | null;
 }) {
   const isOnline = system?.initialized && !error;
+  const budget = system?.trioBudget;
 
   return (
     <header className={styles.bar}>
@@ -38,7 +41,23 @@ export function StatusBar({
           </span>
         </div>
 
-        {system && (
+        {budget && (
+          <>
+            <div className={styles.modeBadge} data-mode={budget.mode}>
+              {budget.mode === 'demo' ? 'DEMO' : 'DEV'}
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statValue}>{50 - budget.checkOnceUsed}</span>
+              <span className={styles.statLabel}>CALLS</span>
+            </div>
+            <div className={styles.stat}>
+              <span className={styles.statValue}>{30 - budget.liveMinutesUsed}</span>
+              <span className={styles.statLabel}>LIVE MIN</span>
+            </div>
+          </>
+        )}
+
+        {system && !budget && (
           <div className={styles.stat}>
             <span className={styles.statValue}>{system.activeJobCount}</span>
             <span className={styles.statLabel}>JOBS</span>

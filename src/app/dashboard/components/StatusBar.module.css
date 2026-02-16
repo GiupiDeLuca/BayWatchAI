@@ -98,6 +98,22 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.modeBadge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.modeBadge[data-mode='demo'] {
+  background: #39FF14;
+  color: #000;
+}
+
 .clock {
   font-family: var(--font-mono);
   font-size: 0.85rem;

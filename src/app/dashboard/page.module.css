@@ -2,8 +2,18 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: var(--color-bg);
+  background: var(--color-surface);
   overflow: hidden;
+}
+
+/* Inner content wrapper with lateral padding */
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  padding: 0 96px;
+  background: var(--color-surface);
 }
 
 /* Top row: 3 zone cards with mini-maps + data */
