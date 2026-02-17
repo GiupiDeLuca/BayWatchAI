@@ -26,13 +26,7 @@ export async function POST(request: NextRequest) {
       try { await stopAll(); } catch { /* ignore */ }
     }
 
-    const result = await startAll();
-
-    // Auto-seed demo data so the dashboard looks alive immediately
-    try {
-      const { seedDemoData } = await import('@/lib/demo-data');
-      seedDemoData();
-    } catch { /* ignore seed errors */ }
+    const result = await startAll({ skipTrio: true });
 
     return NextResponse.json({
       status: 'started',

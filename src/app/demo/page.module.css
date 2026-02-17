@@ -1,0 +1,440 @@
+/* ============================================
+   Demo Control Panel — Light Theme
+   Matches dashboard aesthetic (warm cream/white)
+   ============================================ */
+
+/* ---- Layout ---- */
+
+.container {
+  background: var(--color-bg);
+  padding: 32px 48px;
+  min-height: 100vh;
+}
+
+/* ---- Header ---- */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.headerTitle {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  letter-spacing: 4px;
+  color: var(--color-red);
+}
+
+.headerRight {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* ---- Status & Mode Badges ---- */
+
+.statusBadge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  letter-spacing: 2px;
+}
+
+.statusOnline {
+  background: rgba(42, 157, 78, 0.12);
+  color: var(--color-risk-low);
+}
+
+.statusOffline {
+  background: rgba(139, 112, 96, 0.12);
+  color: var(--color-text-dim);
+}
+
+.modeBadge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  letter-spacing: 2px;
+}
+
+.modeDemo {
+  background: rgba(230, 57, 70, 0.12);
+  color: var(--color-red);
+}
+
+.modeConservative {
+  background: rgba(139, 112, 96, 0.12);
+  color: var(--color-text-dim);
+}
+
+/* ---- Budget Stat ---- */
+
+.budgetStat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.budgetValue {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--color-text);
+}
+
+.budgetLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--color-text-muted);
+}
+
+.budgetDanger {
+  color: var(--color-red);
+}
+
+/* ---- Sections ---- */
+
+.section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-surface-2);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 3px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+/* ---- Auto-Start Banner ---- */
+
+.autoStartBanner {
+  background: rgba(42, 157, 78, 0.08);
+  border: 1px solid rgba(42, 157, 78, 0.2);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-risk-low);
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---- Mode Controls ---- */
+
+.modeControls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.goLiveBtn {
+  background: var(--color-red);
+  color: #fff;
+  padding: 14px 40px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: 3px;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 16px rgba(230, 57, 70, 0.3);
+  cursor: pointer;
+}
+
+.goLiveBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(230, 57, 70, 0.4);
+}
+
+.goLiveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.goLiveBtnActive {
+  animation: pulse-border 2s infinite;
+}
+
+.stopBtn {
+  background: var(--color-surface-3);
+  color: var(--color-text-muted);
+  padding: 14px 40px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: 3px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.stopBtn:hover:not(:disabled) {
+  background: var(--color-surface-2);
+}
+
+.stopBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modeIndicator {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-red);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pulsingDot {
+  width: 10px;
+  height: 10px;
+  background: var(--color-red);
+  border-radius: 50%;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+/* ---- Keyframes ---- */
+
+@keyframes pulse-border {
+  0%,
+  100% {
+    box-shadow: 0 4px 16px rgba(230, 57, 70, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(230, 57, 70, 0.6),
+      0 0 0 4px rgba(230, 57, 70, 0.1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* ---- Zone Grid ---- */
+
+.zoneGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.zoneCard {
+  background: var(--color-bg);
+  border: 1px solid var(--color-surface-2);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.zoneHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.zoneName {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: var(--color-text);
+}
+
+.riskBadge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 1px;
+}
+
+.riskLow {
+  background: rgba(42, 157, 78, 0.12);
+  color: var(--color-risk-low);
+}
+
+.riskElevated {
+  background: rgba(212, 147, 13, 0.12);
+  color: var(--color-risk-elevated);
+}
+
+.riskHigh {
+  background: rgba(230, 57, 70, 0.12);
+  color: var(--color-risk-high);
+}
+
+/* ---- Trio Buttons (Monitor / Digest) ---- */
+
+.trioBtn {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  border: 1px solid;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  background: transparent;
+}
+
+.trioBtnMonitor {
+  color: var(--color-ocean);
+  border-color: var(--color-ocean);
+}
+
+.trioBtnMonitor:hover:not(:disabled) {
+  background: rgba(29, 111, 165, 0.08);
+}
+
+.trioBtnDigest {
+  color: var(--color-cyan);
+  border-color: var(--color-cyan);
+}
+
+.trioBtnDigest:hover:not(:disabled) {
+  background: rgba(33, 158, 188, 0.08);
+}
+
+.trioBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.jobInfo {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-dim);
+  margin-top: 4px;
+}
+
+.jobId {
+  color: var(--color-ocean);
+  font-weight: 600;
+}
+
+/* ---- Event Grid ---- */
+
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.eventZoneCol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eventZoneLabel {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.eventBtn {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: center;
+}
+
+.eventBtn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.eventBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.eventVision {
+  background: var(--color-amber);
+}
+
+.eventEmergency {
+  background: var(--color-red);
+}
+
+.eventEnv {
+  background: var(--color-ocean);
+}
+
+.eventClear {
+  background: var(--color-risk-low);
+}
+
+/* ---- Event Log ---- */
+
+.eventLog {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.logEntry {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-surface-2);
+  font-size: 0.75rem;
+  display: flex;
+  gap: 8px;
+}
+
+.logTime {
+  font-family: var(--font-mono);
+  color: var(--color-text-dim);
+  flex-shrink: 0;
+}
+
+.logMsg {
+  color: var(--color-text-muted);
+}
+
+.logSuccess {
+  color: var(--color-risk-low);
+}
+
+.logError {
+  color: var(--color-red);
+}
+
+.logWarning {
+  color: var(--color-amber);
+}
+
+.logEmpty {
+  color: var(--color-text-dim);
+  font-size: 0.8rem;
+  font-style: italic;
+  padding: 16px 0;
+}

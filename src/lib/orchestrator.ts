@@ -68,7 +68,7 @@ const CONDITION_ROTATION: { key: 'highCrowdNearWaterline' | 'swimmersDetected'; 
  * Start all monitoring: check-once polling + NOAA fetching.
  * Live-monitor and live-digest are on-demand only (not auto-started).
  */
-export async function startAll(): Promise<{ jobsCreated: number; message: string }> {
+export async function startAll(options?: { skipTrio?: boolean }): Promise<{ jobsCreated: number; message: string }> {
   if (getIsRunning()) {
     return { jobsCreated: 0, message: 'Already running' };
   }
@@ -93,22 +93,29 @@ export async function startAll(): Promise<{ jobsCreated: number; message: string
     console.log(`[orchestrator] Zone ${zone.id}: stream online`);
   }
 
-  // Initial NOAA fetch
+  // Initial NOAA fetch (free — no API cost)
   fetchNoaaForAllZones().catch((e) =>
     console.error('[orchestrator] Initial NOAA fetch failed:', e),
   );
 
-  // Start check-once polling in conservative mode (default)
-  const budget = getTrioBudget();
-  const intervalMs = budget.mode === 'demo' ? DEMO_CHECK_INTERVAL_MS : CONSERVATIVE_CHECK_INTERVAL_MS;
+  // Start check-once polling unless skipTrio is set
+  // When skipTrio is true, Trio API calls only start when presenter clicks GO LIVE
+  if (!options?.skipTrio) {
+    const budget = getTrioBudget();
+    const intervalMs = budget.mode === 'demo' ? DEMO_CHECK_INTERVAL_MS : CONSERVATIVE_CHECK_INTERVAL_MS;
 
-  setCheckOnceInterval(setInterval(() => {
-    runCheckOnceCycle().catch((e) =>
-      console.error('[orchestrator] check-once cycle error:', e),
-    );
-  }, intervalMs));
+    setCheckOnceInterval(setInterval(() => {
+      runCheckOnceCycle().catch((e) =>
+        console.error('[orchestrator] check-once cycle error:', e),
+      );
+    }, intervalMs));
 
-  // Start NOAA polling timer
+    console.log(`[orchestrator] Check-once started (${budget.mode} mode, every ${intervalMs / 1000}s)`);
+  } else {
+    console.log('[orchestrator] Trio API calls deferred — waiting for GO LIVE');
+  }
+
+  // Start NOAA polling timer (free — no API cost)
   setNoaaInterval(setInterval(() => {
     fetchNoaaForAllZones().catch((e) =>
       console.error('[orchestrator] NOAA fetch error:', e),
@@ -116,9 +123,10 @@ export async function startAll(): Promise<{ jobsCreated: number; message: string
   }, NOAA_INTERVAL_MS));
 
   setActiveJobCount(0);
-  console.log(`[orchestrator] System started in ${budget.mode} mode. Check-once every ${intervalMs / 1000}s.`);
+  const mode = options?.skipTrio ? 'standby (NOAA only)' : getTrioBudget().mode;
+  console.log(`[orchestrator] System started in ${mode} mode.`);
 
-  return { jobsCreated: 0, message: `Monitoring ${enabledZones.length} zones (${budget.mode} mode)` };
+  return { jobsCreated: 0, message: `Monitoring ${enabledZones.length} zones (${mode})` };
 }
 
 /**
@@ -167,22 +175,18 @@ export function startDemoMode(): { success: boolean; message: string } {
 }
 
 /**
- * Switch back to conservative mode.
+ * Stop demo mode: fully stop check-once polling (zero Trio API calls).
+ * Presenter must click GO LIVE again to resume.
  */
 export function stopDemoMode(): { success: boolean; message: string } {
   setTrioMode('conservative');
 
   const ci = getCheckOnceInterval();
   if (ci) clearInterval(ci);
+  setCheckOnceInterval(null);
 
-  setCheckOnceInterval(setInterval(() => {
-    runCheckOnceCycle().catch((e) =>
-      console.error('[orchestrator] check-once cycle error:', e),
-    );
-  }, CONSERVATIVE_CHECK_INTERVAL_MS));
-
-  console.log('[orchestrator] Switched to CONSERVATIVE mode (60s interval, rotating zones)');
-  return { success: true, message: 'Conservative mode activated — check-once every 60s, rotating' };
+  console.log('[orchestrator] STOPPED — check-once polling halted, zero Trio API calls');
+  return { success: true, message: 'Stopped — all Trio API calls halted. Press GO LIVE to resume.' };
 }
 
 // ===== Manual Trio Triggers =====

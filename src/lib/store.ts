@@ -68,7 +68,7 @@ function createInitialState(): SystemState {
     trioBudget: {
       checkOnceUsed: 0,
       liveMinutesUsed: 0,
-      mode: 'conservative' as TrioMode,
+      mode: 'demo' as TrioMode,
     },
     resolvedActionIds: [],
   };
